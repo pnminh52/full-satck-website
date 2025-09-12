@@ -42,8 +42,8 @@ export const createProduct = async (req, res) => {
       setting,
       style,
       category_id,
-      additional_images,
-      featured
+      additional_images = [],
+      featured = []
     } = req.body;
 
     if (!name || !image || !price) {
@@ -51,19 +51,20 @@ export const createProduct = async (req, res) => {
     }
 
     const [newProduct] = await sql`
-    INSERT INTO products (
-      name, title, description, image, price, colorCode,
-      material, carat, form, setting, style,
-      category_id, additional_images, featured
-    )
-    VALUES (
-      ${name}, ${title}, ${description}, ${image}, ${price}, ${colorCode},
-      ${material}, ${carat}, ${formType}, ${setting}, ${style},
-      ${category_id}, ${additional_images}, ${featured}
-    )
-    RETURNING *
-  `;
-  
+      INSERT INTO products (
+        name, title, description, image, price, colorCode,
+        material, carat, form, setting, style,
+        category_id, additional_images, featured
+      )
+      VALUES (
+        ${name}, ${title}, ${description}, ${image}, ${price}, ${colorCode},
+        ${material}, ${carat}, ${formType}, ${setting}, ${style},
+        ${category_id || null},
+        COALESCE(${additional_images}::text[], '{}'),
+        COALESCE(${JSON.stringify(featured)}::jsonb, '[]'::jsonb)
+      )
+      RETURNING *
+    `;
 
     res.status(201).json(newProduct);
   } catch (error) {
@@ -71,6 +72,7 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 // UPDATE product
@@ -102,7 +104,7 @@ export const updateProduct = async (req, res) => {
       description = ${description},
       image = ${image},
       price = ${price},
-      colorCode = ${colorCode},
+      colorCode=${colorCode}
       material = ${material},
       carat = ${carat},
       form = ${formType},
@@ -114,7 +116,6 @@ export const updateProduct = async (req, res) => {
     WHERE id = ${id}
     RETURNING *
   `;
-  
   
 
     if (!updatedProduct) {

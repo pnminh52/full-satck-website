@@ -131,7 +131,7 @@ function ProductAdd() {
                 />
                  <input
                     className="border rounded p-2"
-                    placeholder="Material"
+                    placeholder="Color code"
                     value={form.colorcode}
                     onChange={(e) => setForm({ ...form, colorcode: e.target.value })}
                 />
@@ -159,18 +159,24 @@ function ProductAdd() {
                     value={form.style}
                     onChange={(e) => setForm({ ...form, style: e.target.value })}
                 />
-               <select
-        value={form.category_id}
-        onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-        className="border rounded p-2"
-      >
-        <option value="">-- Select Category --</option>
-        {categories.map((cat) => (
-          <option key={cat.id} value={cat.id}>
-            {cat.name}
-          </option>
-        ))}
-      </select>
+              <select
+  value={form.category_id || ""}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      category_id: e.target.value === "" ? null : Number(e.target.value),
+    })
+  }
+  className="border rounded p-2"
+>
+  <option value="">-- Select Category --</option>
+  {categories.map((cat) => (
+    <option key={cat.id} value={cat.id}>
+      {cat.name}
+    </option>
+  ))}
+</select>
+
 
                 {/* Additional Images */}
                 <div>
