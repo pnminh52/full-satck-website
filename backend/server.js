@@ -5,6 +5,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import productRoutes from "./routes/productRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
+
+
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjetConfig.js";
 
@@ -51,22 +54,72 @@ if(decision.results.some((results)=>results.reason.isBot() && results.reason.isS
 // Dùng route
 app.use("/api/products", productRoutes);
 
+app.use("/api/categories", categoryRoutes);
+
 async function initDB() {
   try {
+    // Tạo bảng categories trước
+    await sql`
+      CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image VARCHAR(255),
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Tạo bảng products
     await sql`
       CREATE TABLE IF NOT EXISTS products (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        image VARCHAR(255) NOT NULL,
+        title VARCHAR(255),
+        description TEXT,
+        material VARCHAR(255),
+        carat VARCHAR(100),
+        form VARCHAR(100),
+        setting VARCHAR(100),
+        style VARCHAR(100),
         price DECIMAL(10,2) NOT NULL,
+        image VARCHAR(255) NOT NULL,
+        additional_images TEXT[], 
+        featured JSONB,
+        category_id INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
+      );
     `;
-    console.log("✅ Table 'products' ensured");
+
+    // Thêm cột nếu sau này cần mở rộng (không lỗi nếu đã có)
+    await sql`
+      ALTER TABLE products
+      ADD COLUMN IF NOT EXISTS additional_images TEXT[],
+      ADD COLUMN IF NOT EXISTS featured JSONB,
+      ADD COLUMN IF NOT EXISTS category_id INT;
+    `;
+
+    // Thêm FK nếu chưa tồn tại
+    await sql`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.table_constraints
+          WHERE constraint_name = 'fk_category'
+        ) THEN
+          ALTER TABLE products
+          ADD CONSTRAINT fk_category
+          FOREIGN KEY (category_id) REFERENCES categories(id)
+          ON DELETE SET NULL;
+        END IF;
+      END$$;
+    `;
+
+    console.log("✅ Database initialized successfully");
   } catch (error) {
     console.error("❌ DB error:", error.message);
   }
 }
+
 
 // Gọi hàm khởi tạo DB
 initDB().then(() => {
