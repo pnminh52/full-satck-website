@@ -4,25 +4,44 @@ import { getProducts, getProductById } from "../../api/products";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const [allProducts, setAllProducts] = useState([]); // tất cả sản phẩm cùng tên
-  const [product, setProduct] = useState(null); // sản phẩm đang hiển thị
+  const [allVariants, setAllVariants] = useState([]); // tất cả sản phẩm cùng name
+  const [product, setProduct] = useState(null); // sản phẩm hiện tại
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
-
+  const [selectedVariant, setSelectedVariant] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Lấy sản phẩm hiện tại
         const res = await getProductById(id);
-        setProduct(res.data);
-        setSelectedImage(res.data.image);
+        const currentProduct = res.data;
 
-        // Lấy tất cả sản phẩm để lọc trùng tên
+        // Parse additional_images nếu là string
+        const additionalImages = Array.isArray(currentProduct.additional_images)
+          ? currentProduct.additional_images
+          : currentProduct.additional_images
+            ? JSON.parse(currentProduct.additional_images)
+            : [];
+
+        currentProduct.parsedImages = additionalImages;
+
+        setProduct(currentProduct);
+        setSelectedImage(currentProduct.image);
+
+        // Lấy tất cả sản phẩm để lọc cùng name
         const allRes = await getProducts();
-        const sameNameProducts = allRes.data.filter(
-          (p) => p.name === res.data.name
-        );
-        setAllProducts(sameNameProducts);
+        const sameNameProducts = allRes.data
+          .filter((p) => p.name === currentProduct.name)
+          .map((p) => {
+            const imgs = Array.isArray(p.additional_images)
+              ? p.additional_images
+              : p.additional_images
+                ? JSON.parse(p.additional_images)
+                : [];
+            return { ...p, parsedImages: imgs };
+          });
+
+        setAllVariants(sameNameProducts);
       } catch (err) {
         console.error("❌ Error fetching products:", err);
       } finally {
@@ -38,12 +57,38 @@ const ProductDetails = () => {
   const handleVariantClick = (variant) => {
     setProduct(variant);
     setSelectedImage(variant.image);
+    setSelectedVariant(variant);
   };
+  
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        
       {/* Hình ảnh */}
       <div>
+      {allVariants.length > 0 && (
+  <div className="flex gap-6 mt-2">
+    {allVariants.map((variant) => (
+      <div
+        key={variant.id}
+        onClick={() => handleVariantClick(variant)}
+        className="cursor-pointer flex items-center gap-1"
+      >
+        <span
+          className={`inline-block w-3 h-3 rounded-full border-2  ${
+            selectedVariant?.id === variant.id ? "border-[#979797]" : "border-none"
+          }`}
+          style={{ backgroundColor: variant.colorcode }}
+        ></span>
+        <span className={`text-sm 
+            ${
+                selectedVariant?.id === variant.id ? "font-semibold" : ""
+              }
+            `}>{variant.color}</span>
+      </div>
+    ))}
+  </div>
+)}
         <img
           src={selectedImage}
           alt={product.name}
@@ -52,44 +97,33 @@ const ProductDetails = () => {
 
         {/* Gallery ảnh phụ */}
         <div className="flex gap-2 mb-4">
-        {[product.image, ...(product.additional_images || [])]
-  .filter((img) => img) // bỏ những giá trị rỗng/null/undefined
-  .map((img, idx) => (
-    <img
-      key={idx}
-      src={img}
-      alt={`thumbnail-${idx}`}
-      className={`w-20 h-20 object-cover rounded cursor-pointer border ${
-        selectedImage === img ? "border-blue-500" : "border-gray-300"
-      }`}
-      onClick={() => setSelectedImage(img)}
-    />
-))}
-
+          {[product.image, ...(product.parsedImages || [])]
+            .filter((img) => img)
+            .map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={`thumbnail-${idx}`}
+                className={`w-20 h-20 object-cover rounded cursor-pointer  ${
+                  selectedImage === img ? "border-gray-300 border" : ""
+                }`}
+                onClick={() => setSelectedImage(img)}
+              />
+            ))}
         </div>
 
-        {/* Variants khác cùng tên */}
-        {allProducts.length > 1 && (
-          <div className="flex gap-2 mt-2">
-            {allProducts
-              .filter((p) => p.id !== product.id)
-              .map((variant) => (
-                <img
-                  key={variant.id}
-                  src={variant.image}
-                  alt={variant.name}
-                  className="w-16 h-16 object-cover rounded cursor-pointer border border-gray-300"
-                  onClick={() => handleVariantClick(variant)}
-                />
-              ))}
-          </div>
-        )}
+        
+
+
+
+
+
       </div>
 
       {/* Thông tin sản phẩm */}
       <div className="flex flex-col justify-between">
         <div>
-          <h1 className="text-2xl font-bold mb-2">{product.name}</h1>
+          <h1 className="font-thin mb-2 eb-garamond-800">{product.name}</h1>
           <p className="text-xl text-gray-700 mb-4">
             {Number(product.price).toLocaleString()} ¥
           </p>

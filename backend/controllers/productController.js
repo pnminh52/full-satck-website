@@ -35,6 +35,7 @@ export const createProduct = async (req, res) => {
       description,
       image,
       price,
+      color,
       material,
       colorCode,
       carat,
@@ -52,12 +53,12 @@ export const createProduct = async (req, res) => {
 
     const [newProduct] = await sql`
       INSERT INTO products (
-        name, title, description, image, price, colorCode,
+        name, title, description, color, image, price, colorCode,
         material, carat, form, setting, style,
         category_id, additional_images, featured
       )
       VALUES (
-        ${name}, ${title}, ${description}, ${image}, ${price}, ${colorCode},
+        ${name}, ${title},  ${color}, ${description}, ${image}, ${price}, ${colorCode},
         ${material}, ${carat}, ${formType}, ${setting}, ${style},
         ${category_id || null},
         COALESCE(${additional_images}::text[], '{}'),
@@ -87,6 +88,7 @@ export const updateProduct = async (req, res) => {
       price,
       material,
       carat,
+      color,
       form: formType,
       colorCode,
       setting,
@@ -104,7 +106,8 @@ export const updateProduct = async (req, res) => {
       description = ${description},
       image = ${image},
       price = ${price},
-      colorCode=${colorCode}
+      color=${color},
+      colorCode=${colorCode},
       material = ${material},
       carat = ${carat},
       form = ${formType},

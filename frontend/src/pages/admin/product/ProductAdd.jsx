@@ -10,6 +10,7 @@ function ProductAdd() {
         image: "",
         price: "",
         title: "",
+        color:"",
         description: "",
         material: "",
         carat: "",
@@ -122,6 +123,13 @@ function ProductAdd() {
                     type="number"
                     value={form.price}
                     onChange={(e) => setForm({ ...form, price: e.target.value })}
+                />
+                 <input
+                    className="border rounded p-2"
+                    placeholder="Color"
+                    type="text"
+                    value={form.color}
+                    onChange={(e) => setForm({ ...form, color: e.target.value })}
                 />
                 <input
                     className="border rounded p-2"
