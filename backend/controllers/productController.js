@@ -1,9 +1,14 @@
 import { sql } from "../config/db.js";
 
-// GET all products
+// ✅ GET all products (kèm category_name)
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await sql`SELECT * FROM products ORDER BY id DESC`;
+    const products = await sql`
+      SELECT p.*, c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      ORDER BY p.id DESC
+    `;
     res.status(200).json(products);
   } catch (error) {
     console.error("❌ Error getAllProducts:", error.message);
@@ -11,58 +16,56 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// GET product by ID
+// ✅ GET product by ID (kèm category_name và variants)
 export const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const [product] = await sql`SELECT * FROM products WHERE id = ${id}`;
+    const [product] = await sql`
+      SELECT p.*, c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      WHERE p.id = ${id}
+    `;
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
-    res.status(200).json(product);
+
+    // lấy variants kèm theo (nếu có)
+    const variants = await sql`
+      SELECT * FROM product_variants WHERE product_id = ${id}
+    `;
+
+    res.status(200).json({ ...product, variants });
   } catch (error) {
     console.error("❌ Error getProductById:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// CREATE new product
+// ✅ CREATE new product
 export const createProduct = async (req, res) => {
   try {
     const {
       name,
-      title,
       description,
-      image,
-      price,
-      color,
-      material,
-      colorCode,
-      carat,
-      form: formType,
-      setting,
-      style,
-      category_id,
+      base_image,
       additional_images = [],
-      featured = []
+      category_id,
     } = req.body;
 
-    if (!name || !image || !price) {
+    if (!name || !base_image) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const [newProduct] = await sql`
       INSERT INTO products (
-        name, title, description, color, image, price, colorCode,
-        material, carat, form, setting, style,
-        category_id, additional_images, featured
+        name, description, base_image, additional_images, category_id
       )
       VALUES (
-        ${name}, ${title},  ${color}, ${description}, ${image}, ${price}, ${colorCode},
-        ${material}, ${carat}, ${formType}, ${setting}, ${style},
-        ${category_id || null},
+        ${name}, ${description}, ${base_image},
         COALESCE(${additional_images}::text[], '{}'),
-        COALESCE(${JSON.stringify(featured)}::jsonb, '[]'::jsonb)
+        ${category_id || null}
       )
       RETURNING *
     `;
@@ -74,52 +77,29 @@ export const createProduct = async (req, res) => {
   }
 };
 
-
-
-// UPDATE product
+// ✅ UPDATE product
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const {
       name,
-      title,
       description,
-      image,
-      price,
-      material,
-      carat,
-      color,
-      form: formType,
-      colorCode,
-      setting,
-      style,
-      category_id,
+      base_image,
       additional_images,
-      featured
+      category_id,
     } = req.body;
 
     const [updatedProduct] = await sql`
-    UPDATE products
-    SET 
-      name = ${name},
-      title = ${title},
-      description = ${description},
-      image = ${image},
-      price = ${price},
-      color=${color},
-      colorCode=${colorCode},
-      material = ${material},
-      carat = ${carat},
-      form = ${formType},
-      setting = ${setting},
-      style = ${style},
-      category_id = ${category_id || null},
-      additional_images = COALESCE(${additional_images}::text[], '{}'),
-      featured = COALESCE(${JSON.stringify(featured)}::jsonb, '[]'::jsonb)
-    WHERE id = ${id}
-    RETURNING *
-  `;
-  
+      UPDATE products
+      SET
+        name = ${name},
+        description = ${description},
+        base_image = ${base_image},
+        additional_images = COALESCE(${additional_images}::text[], '{}'),
+        category_id = ${category_id || null}
+      WHERE id = ${id}
+      RETURNING *
+    `;
 
     if (!updatedProduct) {
       return res.status(404).json({ error: "Product not found" });
@@ -132,16 +112,13 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-
-// DELETE product
+// ✅ DELETE product
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
     const [deletedProduct] = await sql`
-      DELETE FROM products
-      WHERE id = ${id}
-      RETURNING *
+      DELETE FROM products WHERE id = ${id} RETURNING *
     `;
 
     if (!deletedProduct) {

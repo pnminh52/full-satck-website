@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-
+import variantRoutes from "./routes/variantRoutes.js"
 
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjetConfig.js";
@@ -56,69 +56,78 @@ app.use("/api/products", productRoutes);
 
 app.use("/api/categories", categoryRoutes);
 
+app.use("/api/product-variants", variantRoutes);
 async function initDB() {
   try {
-    // Tạo bảng categories trước
+    // 1. Categories
     await sql`
       CREATE TABLE IF NOT EXISTS categories (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        image VARCHAR(255),
+        image TEXT,
         description TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
 
-    // Tạo bảng products
+    // 2. Products (thông tin chung)
     await sql`
       CREATE TABLE IF NOT EXISTS products (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
-        title VARCHAR(255),
         description TEXT,
-        material VARCHAR(255),
-        carat VARCHAR(100),
-        form VARCHAR(100),
-        setting VARCHAR(100),
-        style VARCHAR(100),
-        price DECIMAL(10,2) NOT NULL,
-        image VARCHAR(255) NOT NULL,
-        additional_images TEXT[], 
-        featured JSONB,
-        category_id INT,
+        base_image TEXT,
+        additional_images TEXT[],
+        category_id INT REFERENCES categories(id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
 
-    // Thêm cột nếu sau này cần mở rộng (không lỗi nếu đã có)
+    // 3. Product Variants (màu, dung lượng, size…)
     await sql`
-      ALTER TABLE products
-      ADD COLUMN IF NOT EXISTS additional_images TEXT[],
-      ADD COLUMN IF NOT EXISTS featured JSONB,
-      ADD COLUMN IF NOT EXISTS category_id INT;
+      CREATE TABLE IF NOT EXISTS product_variants (
+        id SERIAL PRIMARY KEY,
+        product_id INT REFERENCES products(id) ON DELETE CASCADE,
+        color VARCHAR(100),
+         color_code VARCHAR(7),
+          additional_images TEXT[],
+        storage VARCHAR(100),
+        size VARCHAR(100),
+        price DECIMAL(10,2) NOT NULL,
+        stock INT DEFAULT 0,
+        image VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `;
 
-    // Thêm FK nếu chưa tồn tại
+    // 4. Orders
     await sql`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM information_schema.table_constraints
-          WHERE constraint_name = 'fk_category'
-        ) THEN
-          ALTER TABLE products
-          ADD CONSTRAINT fk_category
-          FOREIGN KEY (category_id) REFERENCES categories(id)
-          ON DELETE SET NULL;
-        END IF;
-      END$$;
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        user_id INT,
+        total DECIMAL(10,2) NOT NULL,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `;
 
-    console.log("✅ Database initialized successfully");
+    // 5. Order Items
+    await sql`
+      CREATE TABLE IF NOT EXISTS order_items (
+        id SERIAL PRIMARY KEY,
+        order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+        variant_id INT REFERENCES product_variants(id) ON DELETE SET NULL,
+        quantity INT NOT NULL,
+        price DECIMAL(10,2) NOT NULL
+      );
+    `;
+
+    console.log("✅ Database initialized successfully (Apple schema)");
   } catch (error) {
     console.error("❌ DB error:", error.message);
   }
 }
+
 
 
 // Gọi hàm khởi tạo DB

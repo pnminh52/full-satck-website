@@ -23,44 +23,76 @@ function CategoryList() {
 
     try {
       await deleteCategory(id);
-      fetchCategories(); // refresh list
+      fetchCategories();
     } catch (err) {
       console.error("❌ Error deleteCategory:", err.message);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Categories</h1>
-      <Link
-        to="/categories/add"
-        className="px-4 py-2 bg-blue-500 text-white rounded mb-4 inline-block"
-      >
-        ➕ Add Category
-      </Link>
+    <div className="max-w-5xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Categories</h1>
+        <Link
+          to="/admin/categories/add"
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          ➕ Add Category
+        </Link>
+      </div>
 
-      <ul className="space-y-3">
-        {categories.map((cat) => (
-          <li
-            key={cat.id}
-            className="flex items-center justify-between bg-white p-3 rounded shadow"
-          >
-            <div className="flex items-center gap-4">
-              <img src={cat.image} alt={cat.name} className="w-12 h-12 object-cover rounded" />
-              <div>
-                <p className="font-semibold">{cat.name}</p>
-                <p className="text-gray-500 text-sm">{cat.description}</p>
-              </div>
-            </div>
-            <button
-              onClick={() => handleDelete(cat.id)}
-              className="px-3 py-1 bg-red-500 text-white rounded"
-            >
-              ❌ Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-x-auto bg-[#F5F5F7] shadow rounded">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className=" text-left">
+              <th className="p-3 border">#</th>
+              <th className="p-3 border">Image</th>
+              <th className="p-3 border">Name</th>
+              <th className="p-3 border">Description</th>
+              <th className="p-3 border text-center">Products</th>
+              <th className="p-3 border text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.map((cat, index) => (
+              <tr key={cat.id} className="">
+                <td className="p-3 border">{index + 1}</td>
+                <td className="p-3 border">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                </td>
+                <td className="p-3 border font-semibold">{cat.name}</td>
+                <td className="p-3 border text-gray-600">{cat.description}</td>
+                <td className="p-3 border text-center">{cat.product_count}</td>
+                <td className="p-3 border text-center space-x-2">
+                  <Link to={`/admin/categories/edit/${cat.id}`}>
+                    <button className="bg-yellow-500 px-3 py-1 text-white rounded">
+                      Edit
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(cat.id)}
+                    className="bg-red-500 px-3 py-1 text-white rounded"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+
+            {categories.length === 0 && (
+              <tr>
+                <td colSpan="5" className="text-center p-4 text-gray-500">
+                  No categories found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

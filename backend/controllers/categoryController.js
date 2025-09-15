@@ -1,15 +1,22 @@
 import { sql } from "../config/db.js";
 
-// GET all categories
+// GET all categories + count products
 export const getAllCategories = async (req, res) => {
   try {
-    const categories = await sql`SELECT * FROM categories ORDER BY id DESC`;
+    const categories = await sql`
+      SELECT c.*, COUNT(p.id) AS product_count
+      FROM categories c
+      LEFT JOIN products p ON c.id = p.category_id
+      GROUP BY c.id
+      ORDER BY c.id DESC
+    `;
     res.status(200).json(categories);
   } catch (error) {
     console.error("❌ Error getAllCategories:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 // GET category by ID
 export const getCategoryById = async (req, res) => {
@@ -26,18 +33,15 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-// CREATE new category
+// CREATE category
 export const createCategory = async (req, res) => {
   try {
-    const { name, description, image } = req.body;
-
-    if (!name || !image) {
-      return res.status(400).json({ error: "Name and Image are required" });
-    }
+    const { name, image, description } = req.body;
+    if (!name) return res.status(400).json({ error: "Category name is required" });
 
     const [newCategory] = await sql`
-      INSERT INTO categories (name, description, image)
-      VALUES (${name}, ${description || null}, ${image})
+      INSERT INTO categories (name, image, description)
+      VALUES (${name}, ${image}, ${description})
       RETURNING *
     `;
 
@@ -52,11 +56,11 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, image } = req.body;
+    const { name, image, description } = req.body;
 
     const [updatedCategory] = await sql`
       UPDATE categories
-      SET name = ${name}, description = ${description}, image = ${image}
+      SET name = ${name}, image = ${image}, description = ${description}
       WHERE id = ${id}
       RETURNING *
     `;
@@ -78,9 +82,7 @@ export const deleteCategory = async (req, res) => {
     const { id } = req.params;
 
     const [deletedCategory] = await sql`
-      DELETE FROM categories
-      WHERE id = ${id}
-      RETURNING *
+      DELETE FROM categories WHERE id = ${id} RETURNING *
     `;
 
     if (!deletedCategory) {
