@@ -3,18 +3,39 @@ import { sql } from "../config/db.js";
 // ✅ GET all products (kèm category_name)
 export const getAllProducts = async (req, res) => {
   try {
+    // Lấy danh sách sản phẩm + category
     const products = await sql`
       SELECT p.*, c.name AS category_name
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
       ORDER BY p.id DESC
     `;
-    res.status(200).json(products);
+
+    // Lấy id sản phẩm
+    const productIds = products.map((p) => p.id);
+
+    // Lấy variants nếu có
+    let variants = [];
+    if (productIds.length > 0) {
+      variants = await sql`
+        SELECT * FROM product_variants
+        WHERE product_id = ANY(${productIds})
+      `;
+    }
+
+    // Gắn variants vào từng product
+    const result = products.map((p) => ({
+      ...p,
+      variants: variants.filter((v) => v.product_id === p.id),
+    }));
+
+    res.status(200).json(result);
   } catch (error) {
     console.error("❌ Error getAllProducts:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 // ✅ GET product by ID (kèm category_name và variants)
 export const getProductById = async (req, res) => {
@@ -49,6 +70,7 @@ export const createProduct = async (req, res) => {
     const {
       name,
       description,
+      thumbnail,
       base_image,
       additional_images = [],
       category_id,
@@ -60,11 +82,11 @@ export const createProduct = async (req, res) => {
 
     const [newProduct] = await sql`
       INSERT INTO products (
-        name, description, base_image, additional_images, category_id
+        name, description, base_image, additional_images, thumbnail, category_id
       )
       VALUES (
-        ${name}, ${description}, ${base_image},
-        COALESCE(${additional_images}::text[], '{}'),
+        ${name},  ${description}, ${base_image},
+        COALESCE(${additional_images}::text[], '{}'), ${thumbnail},
         ${category_id || null}
       )
       RETURNING *
@@ -85,6 +107,7 @@ export const updateProduct = async (req, res) => {
       name,
       description,
       base_image,
+      thumbnail,
       additional_images,
       category_id,
     } = req.body;
@@ -95,7 +118,7 @@ export const updateProduct = async (req, res) => {
         name = ${name},
         description = ${description},
         base_image = ${base_image},
-        additional_images = COALESCE(${additional_images}::text[], '{}'),
+        additional_images = COALESCE(${additional_images}::text[], '{}'), ${thumbnail},
         category_id = ${category_id || null}
       WHERE id = ${id}
       RETURNING *

@@ -68,7 +68,7 @@ function ProductList() {
                 <td className="p-3 border">{index + 1}</td>
                 <td className="p-3 border">
                   <img
-                    src={p.base_image}
+                    src={p.thumbnail}
                     alt={p.name}
                     className="w-12 h-12 object-cover rounded"
                   />

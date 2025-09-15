@@ -8,7 +8,7 @@ function ProductAdd() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    base_image: "",
+    thumbnail: "",
     additional_images: [""],
     category_id: null,
   });
@@ -31,7 +31,7 @@ function ProductAdd() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.name || !form.base_image) {
+    if (!form.name || !form.thumbnail) {
       setError("Name and Base Image are required.");
       return;
     }
@@ -84,8 +84,8 @@ function ProductAdd() {
         <input
           className="border rounded p-2"
           placeholder="Base Image URL"
-          value={form.base_image}
-          onChange={(e) => setForm({ ...form, base_image: e.target.value })}
+          value={form.thumbnail}
+          onChange={(e) => setForm({ ...form, thumbnail: e.target.value })}
         />
 
         {/* Category */}

@@ -8,7 +8,7 @@ function VariantEdit() {
   const [form, setForm] = useState({
     color: "",
     color_code: "",
-    size: "",
+    storage: "",
     price: "",
     stock: 0,
     image: "",
@@ -59,10 +59,10 @@ function VariantEdit() {
           onChange={(e) => setForm({ ...form, color_code: e.target.value })}
         />
         <input
-          placeholder="Size"
+          placeholder="storage"
           className="border p-2 rounded"
-          value={form.size}
-          onChange={(e) => setForm({ ...form, size: e.target.value })}
+          value={form.storage}
+          onChange={(e) => setForm({ ...form, storage: e.target.value })}
         />
         <input
           type="number"

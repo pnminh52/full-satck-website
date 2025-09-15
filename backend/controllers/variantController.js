@@ -33,7 +33,7 @@ export const getVariantById = async (req, res) => {
 // ✅ CREATE variant
 export const createVariant = async (req, res) => {
   try {
-    const { product_id, color, color_code, storage, size, price, stock, image,  additional_images } =
+    const { product_id, color, color_code, storage, price, stock, image,  additional_images } =
       req.body;
 
     if (!product_id || !price) {
@@ -42,9 +42,9 @@ export const createVariant = async (req, res) => {
 
     const [newVariant] = await sql`
       INSERT INTO product_variants 
-        (product_id, color, color_code, storage, size, price, stock, image,  additional_images)
+        (product_id, color, color_code, storage, price, stock, image,  additional_images)
       VALUES 
-        (${product_id}, ${color}, ${color_code}, ${storage}, ${size}, ${price}, ${stock || 0}, ${image}, ${ additional_images})
+        (${product_id}, ${color}, ${color_code}, ${storage}, ${price}, ${stock || 0}, ${image}, ${ additional_images})
       RETURNING *
     `;
 
@@ -59,7 +59,7 @@ export const createVariant = async (req, res) => {
 export const updateVariant = async (req, res) => {
   try {
     const { id } = req.params;
-    const { color, color_code, storage, size, price, stock, image,  additional_images } = req.body;
+    const { color, color_code, storage, price, stock, image,  additional_images } = req.body;
 
     const [updatedVariant] = await sql`
       UPDATE product_variants
@@ -67,7 +67,6 @@ export const updateVariant = async (req, res) => {
           color_code = ${color_code},
           storage = ${storage},
            additional_images= ${ additional_images}
-          size = ${size},
           price = ${price},
           stock = ${stock},
           image = ${image}

@@ -21,8 +21,10 @@ function App() {
         {/* User routes */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/rings" element={<ProductsList />} />
-          <Route path="/rings/:id" element={<ProductDetails />} />
+          <Route path="/iPhone" element={<ProductsList />} />
+          <Route path="/store" element={<ProductsList />} />
+
+          <Route path="/product/:id" element={<ProductDetails />} />
         </Route>
 
         {/* Admin routes với AdminLayout */}

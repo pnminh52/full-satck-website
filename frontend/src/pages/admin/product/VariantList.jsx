@@ -53,7 +53,7 @@ function VariantList() {
               <th className="p-3 border">Image</th>
               <th className="p-3 border">Color</th>
               <th className="p-3 border">Color Code</th>
-              <th className="p-3 border">Size</th>
+              <th className="p-3 border">storage</th>
               <th className="p-3 border">Price</th>
               <th className="p-3 border">Stock</th>
               <th className="p-3 border text-center">Actions</th>
@@ -74,7 +74,7 @@ function VariantList() {
                 </td>
                 <td className="p-3 border">{v.color}</td>
                 <td className="p-3 border">{v.color_code}</td>
-                <td className="p-3 border">{v.size}</td>
+                <td className="p-3 border">{v.storage}</td>
                 <td className="p-3 border">${v.price}</td>
                 <td className="p-3 border">{v.stock}</td>
                 <td className="p-3 border text-center space-x-2">

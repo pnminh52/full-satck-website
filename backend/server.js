@@ -91,8 +91,8 @@ async function initDB() {
         color VARCHAR(100),
          color_code VARCHAR(7),
           additional_images TEXT[],
-        storage VARCHAR(100),
-        size VARCHAR(100),
+        storage TEXT,
+
         price DECIMAL(10,2) NOT NULL,
         stock INT DEFAULT 0,
         image VARCHAR(255),
