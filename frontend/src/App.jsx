@@ -8,8 +8,7 @@ import CategoryAdd from "./pages/admin/category/CategoryAdd";
 import CategoryEdit from "./pages/admin/category/CategoryEdit";
 import Homepage from "./pages/user/Homepage";
 import UserLayout from "./layouts/UserLayout";
-import ProductsList from "./pages/user/ProductsList";
-import ProductDetails from "./pages/user/ProductDetails";
+
 import AdminLayout from "./layouts/AdminLayout"; 
 import VariantAdd from "./pages/admin/product/VariantAdd";
 import VariantEdit from "./pages/admin/product/VariantEdit";
@@ -21,10 +20,7 @@ function App() {
         {/* User routes */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/iPhone" element={<ProductsList />} />
-          <Route path="/store" element={<ProductsList />} />
-
-          <Route path="/product/:id" element={<ProductDetails />} />
+       
         </Route>
 
         {/* Admin routes với AdminLayout */}

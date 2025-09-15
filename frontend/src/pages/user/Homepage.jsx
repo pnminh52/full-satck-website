@@ -7,7 +7,7 @@ const Homepage = () => {
        
       </div>
       <div className="hidden sm:block">
-       
+       Homepage
       </div>
     </div>
   );
