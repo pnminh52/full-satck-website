@@ -10,8 +10,8 @@ import Homepage from "./pages/user/Homepage";
 import UserLayout from "./layouts/UserLayout";
 
 import AdminLayout from "./layouts/AdminLayout"; 
-import ListProductByCategoRy from "./pages/user/ListProductByCategoRy";
 import ProductDetails from "./pages/user/ProductDetails";
+import ListProduct from "./pages/user/ListProduct";
 function App() {
   return (
     <Router>
@@ -19,8 +19,7 @@ function App() {
         {/* User routes */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
-          <Route path="/category/:id" element={<ListProductByCategoRy />} />
-          <Route path="/product" element={<ListProductByCategoRy />} />
+          <Route path="/product" element={<ListProduct />} />
 
           <Route path="/product/:id" element={<ProductDetails />} />
 

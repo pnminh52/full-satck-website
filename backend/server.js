@@ -89,12 +89,12 @@ CREATE TABLE IF NOT EXISTS products (
   stock INT DEFAULT 0,                 -- Tồn kho
   status VARCHAR(50) DEFAULT 'available',  -- Trạng thái (available, preorder, soldout,…)
   base_image TEXT,                     -- Ảnh chính
-  imagecopyright TEXT;
+  imagecopyright TEXT,
   additional_images TEXT[],            -- Ảnh phụ
   category_id INT REFERENCES categories(id) ON DELETE SET NULL,
   description TEXT,                    -- Mô tả chi tiết
   copyrightSeries VARCHAR(255),        -- Bản quyền series
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
 
@@ -112,16 +112,7 @@ CREATE TABLE IF NOT EXISTS products (
       );
     `;
 
-    // 5. Order Items
-    await sql`
-      CREATE TABLE IF NOT EXISTS order_items (
-        id SERIAL PRIMARY KEY,
-        order_id INT REFERENCES orders(id) ON DELETE CASCADE,
-        variant_id INT REFERENCES product_variants(id) ON DELETE SET NULL,
-        quantity INT NOT NULL,
-        price DECIMAL(10,2) NOT NULL
-      );
-    `;
+
 
     console.log("✅ Database initialized successfully (Apple schema)");
   } catch (error) {

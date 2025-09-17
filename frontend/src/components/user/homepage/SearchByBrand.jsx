@@ -36,7 +36,7 @@ const SearchByBrand = () => {
     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-3 gap-4">
         {categories.map((c) => (
          <Link
-         to={`/category/${c.id}`}
+         to={`/product`}
          key={c.id}
          className="flex relative flex-col items-center cursor-pointer group"
        >
