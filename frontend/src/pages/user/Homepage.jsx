@@ -14,7 +14,7 @@ const Homepage = () => {
     <SliderBanner />
     <Section1  />
   <div className=" max-w-screen-xl mx-auto">
- <SearchByBrand  />
+ {/* <SearchByBrand  /> */}
  <PreOrdersNow  />
  <Exclusives />
   </div>
