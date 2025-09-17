@@ -10,9 +10,8 @@ import Homepage from "./pages/user/Homepage";
 import UserLayout from "./layouts/UserLayout";
 
 import AdminLayout from "./layouts/AdminLayout"; 
-import VariantAdd from "./pages/admin/product/VariantAdd";
-import VariantEdit from "./pages/admin/product/VariantEdit";
-import VariantList from "./pages/admin/product/VariantList";
+import ListProductByCategoRy from "./pages/user/ListProductByCategoRy";
+import ProductDetails from "./pages/user/ProductDetails";
 function App() {
   return (
     <Router>
@@ -20,6 +19,9 @@ function App() {
         {/* User routes */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
+          <Route path="/category/:id" element={<ListProductByCategoRy />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+
        
         </Route>
 
@@ -29,9 +31,6 @@ function App() {
           <Route path="products" element={<ProductList />} />
           <Route path="products/add" element={<ProductAdd />} />
           <Route path="products/edit/:id" element={<ProductEdit />} />
-          <Route path="products/:id/variants" element={<VariantList />} />
-<Route path="products/:id/variants/add" element={<VariantAdd />} />
-<Route path="products/:id/variants/edit/:variantId" element={<VariantEdit />} />
           <Route path="categories" element={<CategoryList />} />
           <Route path="categories/add" element={<CategoryAdd />} />
           <Route path="categories/edit/:id" element={<CategoryEdit />} />

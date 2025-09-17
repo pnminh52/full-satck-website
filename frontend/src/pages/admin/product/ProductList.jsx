@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../../../api/products";
 import { Link } from "react-router-dom";
-
+import PopupDetailTab from "../../../components/admin/product/PopupDetailTab";
 function ProductList() {
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -11,7 +12,7 @@ function ProductList() {
 
   const fetchProducts = async () => {
     try {
-      const res = await getProducts(); // API trả kèm variants
+      const res = await getProducts();
       setProducts(res.data);
     } catch (err) {
       console.error("❌ Error fetchProducts:", err.message);
@@ -20,21 +21,12 @@ function ProductList() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
-
     try {
       await deleteProduct(id);
       fetchProducts();
     } catch (err) {
       console.error("❌ Error deleteProduct:", err.message);
     }
-  };
-
-  const formatPriceRange = (variants) => {
-    if (!variants || variants.length === 0) return "N/A";
-    const prices = variants.map((v) => v.price);
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    return min === max ? `$${min}` : `$${min} - $${max}`;
   };
 
   return (
@@ -47,7 +39,6 @@ function ProductList() {
         >
           ➕ Add Product
         </Link>
-        
       </div>
 
       <div className="overflow-x-auto bg-white shadow rounded">
@@ -57,7 +48,7 @@ function ProductList() {
               <th className="p-3 border">#</th>
               <th className="p-3 border">Image</th>
               <th className="p-3 border">Name</th>
-              <th className="p-3 border">Price Range</th>
+              <th className="p-3 border">Price</th>
               <th className="p-3 border">Category</th>
               <th className="p-3 border text-center">Actions</th>
             </tr>
@@ -68,15 +59,21 @@ function ProductList() {
                 <td className="p-3 border">{index + 1}</td>
                 <td className="p-3 border">
                   <img
-                    src={p.thumbnail}
+                    src={p.base_image}
                     alt={p.name}
                     className="w-12 h-12 object-cover rounded"
                   />
                 </td>
                 <td className="p-3 border font-semibold">{p.name}</td>
-                <td className="p-3 border">{formatPriceRange(p.variants)}</td>
+                <td className="p-3 border">${p.price}</td>
                 <td className="p-3 border">{p.category_name || "None"}</td>
                 <td className="p-3 border text-center space-x-2">
+                  <button
+                    onClick={() => setSelectedProduct(p)}
+                    className="bg-blue-500 px-3 py-1 text-white rounded"
+                  >
+                    View
+                  </button>
                   <Link to={`/admin/products/edit/${p.id}`}>
                     <button className="bg-yellow-500 px-3 py-1 text-white rounded">
                       Edit
@@ -88,12 +85,6 @@ function ProductList() {
                   >
                     Delete
                   </button>
-                  <Link to={`/admin/products/${p.id}/variants`}>
-  <button className="bg-purple-500 px-3 py-1 text-white rounded">
-    Variants
-  </button>
-</Link>
-
                 </td>
               </tr>
             ))}
@@ -108,6 +99,14 @@ function ProductList() {
           </tbody>
         </table>
       </div>
+
+      {/* Popup chi tiết */}
+      {selectedProduct && (
+        <PopupDetailTab
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </div>
   );
 }

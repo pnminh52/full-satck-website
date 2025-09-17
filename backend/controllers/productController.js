@@ -3,7 +3,6 @@ import { sql } from "../config/db.js";
 // ✅ GET all products (kèm category_name)
 export const getAllProducts = async (req, res) => {
   try {
-    // Lấy danh sách sản phẩm + category
     const products = await sql`
       SELECT p.*, c.name AS category_name
       FROM products p
@@ -11,33 +10,14 @@ export const getAllProducts = async (req, res) => {
       ORDER BY p.id DESC
     `;
 
-    // Lấy id sản phẩm
-    const productIds = products.map((p) => p.id);
-
-    // Lấy variants nếu có
-    let variants = [];
-    if (productIds.length > 0) {
-      variants = await sql`
-        SELECT * FROM product_variants
-        WHERE product_id = ANY(${productIds})
-      `;
-    }
-
-    // Gắn variants vào từng product
-    const result = products.map((p) => ({
-      ...p,
-      variants: variants.filter((v) => v.product_id === p.id),
-    }));
-
-    res.status(200).json(result);
+    res.status(200).json(products);
   } catch (error) {
     console.error("❌ Error getAllProducts:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
-// ✅ GET product by ID (kèm category_name và variants)
+// ✅ GET product by ID
 export const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -52,12 +32,7 @@ export const getProductById = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    // lấy variants kèm theo (nếu có)
-    const variants = await sql`
-      SELECT * FROM product_variants WHERE product_id = ${id}
-    `;
-
-    res.status(200).json({ ...product, variants });
+    res.status(200).json(product);
   } catch (error) {
     console.error("❌ Error getProductById:", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -69,11 +44,27 @@ export const createProduct = async (req, res) => {
   try {
     const {
       name,
-      description,
-      thumbnail,
+      title,
+      series,
+      release_date,
+      decalProduction,
+      specifications,
+      sculptor,
+      planningAndProduction,
+      productionCooperation,
+      paintwork,
+      relatedInformation,
+      manufacturer,
+      distributedBy,
+      price,
+      stock,
+      status,
       base_image,
+      imagecopyright,
       additional_images = [],
       category_id,
+      description,
+      copyrightSeries,
     } = req.body;
 
     if (!name || !base_image) {
@@ -82,12 +73,16 @@ export const createProduct = async (req, res) => {
 
     const [newProduct] = await sql`
       INSERT INTO products (
-        name, description, base_image, additional_images, thumbnail, category_id
+        name, title, series, release_date, decalProduction, specifications, sculptor,
+        planningAndProduction, productionCooperation, paintwork, relatedInformation,
+        manufacturer, distributedBy, price, stock, status, base_image, imagecopyright,
+        additional_images, category_id, description, copyrightSeries
       )
       VALUES (
-        ${name},  ${description}, ${base_image},
-        COALESCE(${additional_images}::text[], '{}'), ${thumbnail},
-        ${category_id || null}
+        ${name}, ${title}, ${series}, ${release_date}, ${decalProduction}, ${specifications}, ${sculptor},
+        ${planningAndProduction}, ${productionCooperation}, ${paintwork}, ${relatedInformation},
+        ${manufacturer}, ${distributedBy}, ${price}, ${stock}, ${status}, ${base_image}, ${imagecopyright},
+        COALESCE(${additional_images}::text[], '{}'), ${category_id || null}, ${description}, ${copyrightSeries}
       )
       RETURNING *
     `;
@@ -105,21 +100,54 @@ export const updateProduct = async (req, res) => {
     const { id } = req.params;
     const {
       name,
-      description,
+      title,
+      series,
+      release_date,
+      decalProduction,
+      specifications,
+      sculptor,
+      planningAndProduction,
+      productionCooperation,
+      paintwork,
+      relatedInformation,
+      manufacturer,
+      distributedBy,
+      price,
+      stock,
+      status,
       base_image,
-      thumbnail,
-      additional_images,
+      imagecopyright,
+      additional_images = [],
       category_id,
+      description,
+      copyrightSeries,
     } = req.body;
 
     const [updatedProduct] = await sql`
       UPDATE products
       SET
         name = ${name},
-        description = ${description},
+        title = ${title},
+        series = ${series},
+        release_date = ${release_date},
+        decalProduction = ${decalProduction},
+        specifications = ${specifications},
+        sculptor = ${sculptor},
+        planningAndProduction = ${planningAndProduction},
+        productionCooperation = ${productionCooperation},
+        paintwork = ${paintwork},
+        relatedInformation = ${relatedInformation},
+        manufacturer = ${manufacturer},
+        distributedBy = ${distributedBy},
+        price = ${price},
+        stock = ${stock},
+        status = ${status},
         base_image = ${base_image},
-        additional_images = COALESCE(${additional_images}::text[], '{}'), ${thumbnail},
-        category_id = ${category_id || null}
+        imageCopyright=${imagecopyright},
+        additional_images = COALESCE(${additional_images}::text[], '{}'),
+        category_id = ${category_id || null},
+        description = ${description},
+        copyrightSeries = ${copyrightSeries}
       WHERE id = ${id}
       RETURNING *
     `;

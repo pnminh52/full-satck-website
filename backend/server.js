@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-import variantRoutes from "./routes/variantRoutes.js"
 
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjetConfig.js";
@@ -56,7 +55,6 @@ app.use("/api/products", productRoutes);
 
 app.use("/api/categories", categoryRoutes);
 
-app.use("/api/product-variants", variantRoutes);
 async function initDB() {
   try {
     // 1. Categories
@@ -70,35 +68,38 @@ async function initDB() {
       );
     `;
 
-    // 2. Products (thông tin chung)
-    await sql`
-      CREATE TABLE IF NOT EXISTS products (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        description TEXT,
-        base_image TEXT,
-        additional_images TEXT[],
-        category_id INT REFERENCES categories(id) ON DELETE SET NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `;
+    // 2. Products (schema mới)
+await sql`
+CREATE TABLE IF NOT EXISTS products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,          -- Tên sản phẩm (ngắn gọn)
+  title VARCHAR(255),                  -- Tiêu đề chi tiết
+  series VARCHAR(255),                 -- Series (vd: Hatsune Miku, Naruto,…)
+  release_date DATE,                   -- Ngày phát hành
+  decalProduction VARCHAR(255),        -- Đơn vị sản xuất decal
+  specifications TEXT,                 -- Thông số chi tiết
+  sculptor VARCHAR(255),               -- Người sculpt
+  planningAndProduction VARCHAR(255),  -- Đơn vị Planning/Production
+  productionCooperation VARCHAR(255),  -- Production cooperation
+  paintwork VARCHAR(255),              -- Người phụ trách paintwork
+  relatedInformation TEXT,             -- Thông tin liên quan
+  manufacturer VARCHAR(255),           -- Hãng sản xuất
+  distributedBy VARCHAR(255),          -- Nhà phân phối
+  price DECIMAL(10,2) NOT NULL,        -- Giá bán
+  stock INT DEFAULT 0,                 -- Tồn kho
+  status VARCHAR(50) DEFAULT 'available',  -- Trạng thái (available, preorder, soldout,…)
+  base_image TEXT,                     -- Ảnh chính
+  imagecopyright TEXT;
+  additional_images TEXT[],            -- Ảnh phụ
+  category_id INT REFERENCES categories(id) ON DELETE SET NULL,
+  description TEXT,                    -- Mô tả chi tiết
+  copyrightSeries VARCHAR(255),        -- Bản quyền series
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+);
+`;
 
-    // 3. Product Variants (màu, dung lượng, size…)
-    await sql`
-      CREATE TABLE IF NOT EXISTS product_variants (
-        id SERIAL PRIMARY KEY,
-        product_id INT REFERENCES products(id) ON DELETE CASCADE,
-        color VARCHAR(100),
-         color_code VARCHAR(7),
-          additional_images TEXT[],
-        storage TEXT,
 
-        price DECIMAL(10,2) NOT NULL,
-        stock INT DEFAULT 0,
-        image VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `;
+   
 
     // 4. Orders
     await sql`
