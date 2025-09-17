@@ -20,6 +20,8 @@ function App() {
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
           <Route path="/category/:id" element={<ListProductByCategoRy />} />
+          <Route path="/product" element={<ListProductByCategoRy />} />
+
           <Route path="/product/:id" element={<ProductDetails />} />
 
        
