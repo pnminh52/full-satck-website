@@ -4,7 +4,7 @@ const Loader = ({ size = 8, className = "" }) => {
   const sizeClass = `w-${size} h-${size}`;
 
   return (
-    <div role="status" className={`inline-flex items-center justify-center ${className}`}>
+    <div role="status" className={`inline-flex items-center justify-center min-h-[60vh] ${className}`}>
       <svg
         className={sizeClass}
         style={{ animation: "spin 2s linear infinite" }} // quay lâu hơn

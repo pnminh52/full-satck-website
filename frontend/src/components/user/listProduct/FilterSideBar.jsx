@@ -1,11 +1,13 @@
 // FilterSideBar.jsx
 import React, { useState, useEffect } from "react";
-import { Select } from "antd";
+import { Select, Input } from "antd";
 import PopupFilters from "./PopupFilters";
 
 const { Option } = Select;
+const { Search } = Input;
 
 const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTerm }) => {
+
   const [selectedSeries, setSelectedSeries] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedManufacturers, setSelectedManufacturers] = useState([]);
@@ -51,29 +53,23 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
 
   return (
     <div className="space-y-3">
-       <div className="relative w-full   ">
-  <img
-    src="https://www.goodsmile.com/img/icon/search.svg"
-    alt="search"
-    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5"
-  />
-    <input
-    type="text"
-    placeholder="Search..."
-    className="border border-gray-300  rounded-lg pl-10 py-2 w-full"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-  />
+      <Search
+  placeholder="Search..."
+  allowClear
+  size="large"   // 👈 để đồng bộ chiều cao
+  onSearch={(value) => setSearchTerm(value)}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  value={searchTerm}
+/>
 
-</div>
-
-<div className="flex flex-col gap-0">
+<div className="flex flex-col gap-0 ">
   <Select
     placeholder="Stock"
     value={stockFilter}
     onChange={setStockFilter}
     allowClear
     style={selectStyle}
+    size="large"
   >
     <Option value="">Sort by stock</Option>
     <Option value="inStock">In Stock (≥50)</Option>
@@ -87,6 +83,7 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
     onChange={setStatusFilter}
     allowClear
     style={selectStyle}
+    size="large"
   >
     <Option value="">Sort by status</Option>
     <Option value="available">Available</Option>
@@ -99,6 +96,7 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
     value={sortPrice}
     onChange={setSortPrice}
     style={selectStyle}
+    size="large"
   >
     <Option value="">Sort by price</Option>
     <Option value="asc">Low → High</Option>

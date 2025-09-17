@@ -1,45 +1,70 @@
-import React from 'react'
+// PopupCard.jsx
+import React, { useState } from "react";
 
-const PopupCard = ({handleClose, handleApply, tempSelected, options, handleToggle, label}) => {
+const PopupCard = ({
+  handleApply,
+  tempSelected,
+  options,
+  handleToggle,
+}) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredOptions = options.filter((opt) =>
+    opt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div>
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Backdrop */}
-          <div className="absolute inset-0 z-50 bg-black hide-scrollbar opacity-40" onClick={handleClose}></div>
+    <div className="bg-white  space-y-4 max-h-[80vh] w-full  pt-6 pb-6 overflow-auto">
+     <div>
+{/* Thanh search */}
+<input
+  type="text"
+  placeholder="Search..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="w-full border border-gray-300 rounded px-2 py-1 mb-0 focus:outline-none focus:ring-2 focus:ring-[#F06E00]"
+/>
+     </div>
 
-          {/* Popup content */}
-          <div className="bg-white rounded-lg z-50 max-h-[80vh] w-80 p-4 overflow-auto ">
-            <h4 className="font-semibold mb-2">{label}</h4>
+      {/* Danh sách options */}
+      <div className="space-y-2 max-h-60 overflow-auto hide-scrollbar">
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((opt) => {
+            const isChecked = tempSelected.includes(opt);
+            return (
+              <label
+                key={opt}
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => handleToggle(opt)}
+              >
+                {/* Custom checkbox */}
+                <span
+                  className={`w-5 h-5 flex items-center justify-center rounded-md border  transition-all duration-300 
+                  ${isChecked ? "bg-[#F06E00] border-[#F06E00]" : "bg-white"}`}
+                >
+                  {/* Không có dấu tích, chỉ đổi màu */}
+                </span>
+                <span className="truncate">{opt}</span>
+              </label>
+            );
+          })
+        ) : (
+          <p className="text-gray-400 text-sm">No results found</p>
+        )}
+      </div>
 
-            <div className="space-y-1 max-h-60 overflow-auto">
-              {options.map((opt) => (
-                <label key={opt} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={tempSelected.includes(opt)}
-                    onChange={() => handleToggle(opt)}
-                    className="accent-[#F06E00]"
-                  />
-                  <span className="truncate">{opt}</span>
-                </label>
-              ))}
-            </div>
+      {/* Buttons */}
+       
+      <div className="w-full ">
+      <button
+          className="rounded-full cursor-pointer w-full py-2 font-semibold  bg-[#F06E00] text-white"
+          onClick={handleApply}
+        >
+          Apply
+        </button>
+      </div>
+      </div>
+  );
+};
 
-            <div className="flex justify-between mt-4">
-             
-              <div className="space-x-2">
-                <button className="text-sm px-2 py-1 border rounded" onClick={handleClose}>
-                  Close
-                </button>
-                <button className="text-sm px-2 py-1 border rounded bg-[#F06E00] text-white" onClick={handleApply}>
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-    </div>
-  )
-}
-
-export default PopupCard
+export default PopupCard;
