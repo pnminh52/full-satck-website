@@ -1,6 +1,31 @@
 import React from "react";
+import { addToCart } from "../../../api/cart";
+import { useState } from "react";
 
-const RightSide = ({ product }) => {
+const RightSide = ({ product  }) => {
+
+  const [loading, setLoading] = useState(false);
+
+ const handleAddToCart = async () => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token"); // lấy token
+    if (!token) {
+      alert("You must be logged in to add to cart");
+      setLoading(false);
+      return;
+    }
+
+    await addToCart({ product_id: product.id, quantity: 1 }, token);
+    alert("Added to cart!");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add to cart");
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <div>
       {/* Right: Info */}
@@ -49,6 +74,7 @@ const RightSide = ({ product }) => {
 
       <div className="flex flex-col gap-2 py-4">
       <button
+        onClick={handleAddToCart}
           disabled={product.stock <= 0 && product.status !== "preorder"}
           className="rounded-full px-6 py-3 bg-[#FF6624] text-white font-semibold  
             cursor-pointer  disabled:opacity-50 disabled:cursor-not-allowed"

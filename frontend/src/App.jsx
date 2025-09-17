@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Dashboard from "./pages/admin/Dashboard";
 import ProductList from "./pages/admin/product/ProductList";
 import ProductAdd from "./pages/admin/product/ProductAdd";
@@ -12,16 +15,31 @@ import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout"; 
 import ProductDetails from "./pages/user/ProductDetails";
 import ListProduct from "./pages/user/ListProduct";
+import Login from "./pages/user/Login";
+import Register from "./pages/user/Register";
+import Cart from "./pages/user/Cart";
 function App() {
   return (
     <Router>
+        <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
       <Routes>
+    
         {/* User routes */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<Homepage />} />
           <Route path="/product" element={<ListProduct />} />
-
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/cart" element={<Cart />} />
 
        
         </Route>

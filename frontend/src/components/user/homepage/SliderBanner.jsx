@@ -51,7 +51,7 @@ const SliderBanner = () => {
         loop={true}
         
         autoplay={{
-          delay: 2000, 
+          delay: 5000, 
           
         }}
         className=""
