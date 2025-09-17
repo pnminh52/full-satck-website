@@ -105,7 +105,7 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
     <Option value="desc">High → Low</Option>
   </Select>
 </div>
-<hr className="border-t pb-2 border-gray-400" />
+<hr className="border-t pb-2 border-gray-300" />
 
        <div>
         {/* 3 filter đầu bằng PopupFilters */}
