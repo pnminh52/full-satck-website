@@ -3,7 +3,7 @@ import SliderBanner from './../../components/user/homepage/SliderBanner';
 import Section1 from './../../components/user/homepage/Section1';
 import SearchByBrand from './../../components/user/homepage/SearchByBrand';
 import PreOrdersNow from './../../components/user/homepage/PreOrdersNow';
-import Exclusives from './../../components/user/homepage/Exclusives';
+import News from './../../components/user/homepage/News';
 
 
 
@@ -14,9 +14,10 @@ const Homepage = () => {
     <SliderBanner />
     <Section1  />
   <div className=" max-w-screen-xl mx-auto">
- {/* <SearchByBrand  /> */}
- <PreOrdersNow  />
- <Exclusives />
+  <PreOrdersNow  />
+ <SearchByBrand  />
+
+ <News />
   </div>
    </div>
   );

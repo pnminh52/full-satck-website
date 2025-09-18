@@ -20,20 +20,21 @@ const SearchByBrand = () => {
   
 
   return (
-    <div className="py-8 space-y-8">
+    <div className="">
       <div className="">
-        <div className="flex flex-col items-center gap-1">
+        <div className="flex flex-col items-center  py-4">
           <img
-            className="w-15 h-15"
+            className="sm:w-15 sm:h-15 w-10 h-10"
             src="https://www.goodsmile.com/img/common/face.svg?202406"
             alt=""
           />
-          <p className="text-lg font-semibold">Search by brand</p>
+                  <p className="sm:text-lg text-sm font-semibold">Search By Brand</p>
+
         </div>
       </div>
 
-    <div className="px-20">
-    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-3 gap-4">
+    <div className="sm:px-20 px-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-3 sm:gap-4 gap-2">
         {categories.map((c) => (
          <Link
          to={`/product`}
@@ -43,9 +44,9 @@ const SearchByBrand = () => {
             <img
               src={c.image}
               alt={c.name}
-              className="w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-contain sm:rounded-lg rounded-sm"
             />
-            <p className="font-semibold absolute bottom-2 left-3  text-white uppercase ">{c.name}</p>
+            <p className="font-semibold test-sm absolute bottom-2 left-3  text-white  ">{c.name}</p>
           </Link>
         ))}
       </div>

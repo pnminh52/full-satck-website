@@ -3,15 +3,15 @@ import React from 'react'
 const Section1 = () => {
   return (
    <div>
-     <div className='bg-[#F4F4F6] h-14 flex items-center justify-center'>
-        <p className='flex items-center gap-1 hover:text-[#F06E00] cursor-pointer transition duration-300 ease-in-out '>
+     <div className='bg-[#F4F4F6] sm:h-8 h-10  flex items-center justify-center'>
+        <p className='flex items-center sm:text-sm text-xs truncate gap-1 hover:text-[#F06E00] cursor-pointer transition duration-300 ease-in-out '>
        <img src="https://www.goodsmile.com/img/icon/alert.svg" alt="" /> Notice Regarding the Resumption of Shipping to the United States... 
         </p>
     </div>
     
 
 
-    <div className="w-full px-30 h-35 bg-[#F06E00] flex items-center justify-center">
+    <div className="w-full sm:px-30 px-4 h-20 bg-[#F06E00] flex items-center justify-center">
 
 
 <div className="relative w-full   ">

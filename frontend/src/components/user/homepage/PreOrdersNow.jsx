@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ProductCard from './../listProduct/ProductCard';
 import { getProducts } from '../../../api/products';
 import Loader from '../../Loader';
+import { Link } from 'react-router-dom';
 
 const PreOrdersNow = () => {
   const [products, setProducts] = useState([]);
@@ -27,9 +28,9 @@ const PreOrdersNow = () => {
 
   return (
     <div>
-      <div className="flex flex-col items-center gap-1 mb-4">
-        <img className="w-15 h-15" src="https://www.goodsmile.com/img/icon/pre-order.svg" alt="Preorder" />
-        <p className="text-lg font-semibold">Preorders Open Now</p>
+      <div className="flex flex-col items-center  py-4">
+        <img className="sm:w-15 sm:h-15 w-10 h-10" src="https://www.goodsmile.com/img/icon/pre-order.svg" alt="Preorder" />
+        <p className="sm:text-lg text-sm font-semibold">Preorders Open Now</p>
       </div>
 
       {loading ? (
@@ -37,7 +38,13 @@ const PreOrdersNow = () => {
           <Loader size={14} />
         </div>
       ) : (
-        <ProductCard products={products} columns={5} />
+       <div className='sm:px-0 px-4'>
+       <ProductCard products={products.slice(0, 10)} columns={5} />
+<div className='py-2 block sm:hidden'>
+<Link to={"/product"} >
+<button className=' bg-[#F06E00] text-white font-semibold w-full rounded-full py-2.5'>Shopping Now!</button>
+
+</Link></div>       </div>
 
       )}
     </div>

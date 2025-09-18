@@ -11,7 +11,7 @@ const ProductCard = ({ products, columns = 4 }) => {
 
     return (
         <div>
-            <div className={`grid py-2 gap-4 ${columnClasses[columns] || columnClasses[4]}`}>
+            <div className={`grid  sm:gap-4 gap-2 ${columnClasses[columns] || columnClasses[4]}`}>
                 {products
                     .slice()
                     .sort((a, b) => {
@@ -41,7 +41,7 @@ const ProductCard = ({ products, columns = 4 }) => {
 
                             <div className="w-full py-1 flex space-y-1 justify-center items-center">
                                 <img
-                                    className="w-20 h-auto object-cover"
+                                    className="w-15 sm:w-20 h-auto object-cover"
                                     src={p.imagecopyright}
                                     alt=""
                                 />

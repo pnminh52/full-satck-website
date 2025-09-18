@@ -31,7 +31,7 @@ const ResponsiveImage = ({ small, large }) => (
   <picture>
     <source media="(max-width: 959.98px)" srcSet={small} />
     <source media="(min-width: 960px)" srcSet={large} />
-    <img src={small}  loading="lazy" className="w-full h-full  object-cover " />
+    <img src={small}  loading="lazy" className="w-full sm:h-full h-[50vh]  object-cover " />
   </picture>
 );
 const SliderBanner = () => {
@@ -45,7 +45,17 @@ const SliderBanner = () => {
           nextEl: ".custom-next",
           prevEl: ".custom-prev",
         }}
-        slidesPerView={1.5}
+    
+        slidesPerView={1.5} 
+        breakpoints={{
+          0: {          
+            slidesPerView: 1.2,
+          },
+          768: {       
+            slidesPerView: 1.5,
+          },
+        }}
+
         centeredSlides={true} 
         spaceBetween={10}
         loop={true}
