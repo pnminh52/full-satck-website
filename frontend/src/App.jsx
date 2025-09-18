@@ -10,6 +10,8 @@ import CategoryList from "./pages/admin/category/CategoryList";
 import CategoryAdd from "./pages/admin/category/CategoryAdd";
 import CategoryEdit from "./pages/admin/category/CategoryEdit";
 import Homepage from "./pages/user/Homepage";
+import ForgotPassword from "./pages/user/ForgotPassword";
+import ResetPassword from "./pages/user/ResetPassword";
 import UserLayout from "./layouts/UserLayout";
 
 import AdminLayout from "./layouts/AdminLayout"; 
@@ -18,6 +20,7 @@ import ListProduct from "./pages/user/ListProduct";
 import Login from "./pages/user/Login";
 import Register from "./pages/user/Register";
 import Cart from "./pages/user/Cart";
+import CheckOut from "./pages/user/CheckOut";
 function App() {
   return (
     <Router>
@@ -40,6 +43,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
+
+          <Route path="/forgot-password" element={ <ForgotPassword/>} />
+<Route path="/reset-password" element={<ResetPassword />} />
+
 
        
         </Route>

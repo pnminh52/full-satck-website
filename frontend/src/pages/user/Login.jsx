@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { login } from "../../api/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useAuth from "../../hook/useAuth"; 
 import useToast from "../../hook/useToast";
 
 const Login = () => {
-  const toast=useToast()
+  const toast = useToast();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -65,6 +65,11 @@ const Login = () => {
           Login
         </button>
       </form>
+      <div className="mt-2 text-right">
+        <Link to="/forgot-password" className="text-blue-600 hover:underline text-sm">
+          Forgot Password?
+        </Link>
+      </div>
     </div>
   );
 };

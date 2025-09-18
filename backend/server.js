@@ -8,6 +8,8 @@ import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
+import vnPaypaymentRoutes from "./routes/vnPayPaymentRoutes.js"
+
 
 import { sql } from "./config/db.js";
 import { aj } from "./lib/arcjetConfig.js";
@@ -62,6 +64,9 @@ app.use("/api/categories", categoryRoutes);
 
 app.use("/api/cart", cartRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/payment", vnPaypaymentRoutes);
+
+
 
 
 async function initDB() {
@@ -132,6 +137,18 @@ CREATE TABLE IF NOT EXISTS cart (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
+
+await sql`
+CREATE TABLE IF NOT EXISTS password_resets (
+  id SERIAL PRIMARY KEY,
+  user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  token VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+`;
+
 
 
   await sql` 

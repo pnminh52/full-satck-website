@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { getCart, deleteCartItem, updateCartItem } from "../../api/cart";
 import useAuth from "../../hook/useAuth";
+import { useNavigate } from "react-router-dom";
+
 const Cart = () => {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const res = await getCart(token);
-      // res.data mới là array chứa cart items
       const items = Array.isArray(res.data) ? res.data : [];
       setCartItems(items);
     } catch (error) {
@@ -21,14 +23,13 @@ const Cart = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     if (user && token) {
       fetchCart();
     }
   }, [user, token]);
-  
+
   const handleDelete = async (cartId) => {
     try {
       await deleteCartItem(cartId, token);
@@ -52,6 +53,10 @@ const Cart = () => {
       console.error("Failed to update quantity:", error);
       alert("Failed to update quantity");
     }
+  };
+
+  const handleCheckout = () => {
+    navigate("/checkout", { state: { cartItems } });
   };
 
   if (loading) return <p>Loading cart...</p>;
@@ -108,6 +113,16 @@ const Cart = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Nút Checkout */}
+      <div className="mt-6 flex justify-end">
+        <button
+          onClick={handleCheckout}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Proceed to Checkout
+        </button>
       </div>
     </div>
   );
