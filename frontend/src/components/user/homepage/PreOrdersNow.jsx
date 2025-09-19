@@ -38,7 +38,7 @@ const PreOrdersNow = () => {
           <Loader size={14} />
         </div>
       ) : (
-       <div className='sm:px-0 px-4'>
+       <div className='sm:px-0   px-4'>
        <ProductCard products={products.slice(0, 10)} columns={5} />
 <div className='py-2 block sm:hidden'>
 <Link to={"/product"} >

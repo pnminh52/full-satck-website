@@ -8,7 +8,6 @@ const SearchByBrand = () => {
     const fetchData = async () => {
       try {
         const data = await getCategories();
-        // Nếu API trả về { data: [...] }
         setCategories(Array.isArray(data) ? data : data.data || []);
       } catch (error) {
         console.error("Lỗi khi load categories:", error);
@@ -20,21 +19,21 @@ const SearchByBrand = () => {
   
 
   return (
-    <div className="">
-      <div className="">
-        <div className="flex flex-col items-center  py-4">
+    <div className="space-y-4 py-4">
+     
+        <div className="flex flex-col items-center  ">
           <img
-            className="sm:w-15 sm:h-15 w-10 h-10"
+            className="sm:w-15 w-10"
             src="https://www.goodsmile.com/img/common/face.svg?202406"
             alt=""
           />
                   <p className="sm:text-lg text-sm font-semibold">Search By Brand</p>
 
         </div>
-      </div>
+    
 
-    <div className="sm:px-20 px-4">
-    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-3 sm:gap-4 gap-2">
+    <div className="md:px-20 px-4">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3  sm:gap-4 gap-2">
         {categories.map((c) => (
          <Link
          to={`/product`}

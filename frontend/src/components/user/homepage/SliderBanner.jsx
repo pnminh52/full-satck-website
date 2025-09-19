@@ -4,6 +4,7 @@ import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useRef, useState, useEffect } from 'react';
 
 const images = [
   {
@@ -35,17 +36,38 @@ const ResponsiveImage = ({ small, large }) => (
   </picture>
 );
 const SliderBanner = () => {
-    
+  const [activeIndex, setActiveIndex] = useState(0);
+  const progressRefs = useRef([]);
+  useEffect(() => {
+    let interval;
+    const activeBar = progressRefs.current[activeIndex];
+    let width = 0;
+  
+    // Reset tất cả
+    progressRefs.current.forEach((bar, idx) => {
+      if (bar) bar.style.width = idx === activeIndex ? '0%' : '0%';
+    });
+  
+    interval = setInterval(() => {
+      if (width >= 100) return;
+      width += 0.5;
+      if (activeBar) activeBar.style.width = `${width}%`;
+    }, 25);
+  
+    return () => clearInterval(interval);
+  }, [activeIndex]);
+  
   return (
-    <div className=" bg-black pt-4 pb-4   flex justify-center overflow-hidden">
-    <div className="relative w-full h-full">
+<div className="bg-black pt-4 pb-8 flex justify-center overflow-visible relative h-full">
+<div className="relative w-full h-full">
       <Swiper
         modules={[Navigation, Autoplay]}
         navigation={{
           nextEl: ".custom-next",
           prevEl: ".custom-prev",
         }}
-    
+      
+        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         slidesPerView={1.5} 
         breakpoints={{
           0: {          
@@ -84,7 +106,7 @@ const SliderBanner = () => {
       </Swiper>
 
       {/* Custom nút prev/next */}
-     <div className="hidden sm:block">
+     <div className="hidden md:block">
      <button className="cursor-pointer custom-prev absolute top-1/2 left-48 z-10 -translate-y-1/2 p-6 bg-white  rounded-full shadow hover:bg-gray-100">
        <img className="rotate-180 w-4 h-4 " src="https://www.goodsmile.com/img/icon/arrow-paging.svg" alt="" />
       </button>
@@ -93,7 +115,16 @@ const SliderBanner = () => {
 
       </button>
      </div>
-    </div>
+     <div className="absolute -bottom-4.5 left-0 right-0 flex justify-center z-99 gap-2 px-4">
+          {images.map((_, i) => (
+            <div key={i} className="bg-white/30 h-1 sm:w-20 w-10 rounded overflow-hidden">
+              <div
+                ref={(el) => (progressRefs.current[i] = el)}
+                className="bg-white h-full w-0 transition-all duration-100 linear"
+              ></div>
+            </div>
+          ))}
+        </div>    </div>
   </div>
   )
 }
