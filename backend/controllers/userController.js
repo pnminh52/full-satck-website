@@ -95,18 +95,20 @@ export const resetPassword = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-  const { phone, address } = req.body;
-  const userId = req.user?.id; 
+  const { phone, address, avatar } = req.body;
+  const userId = req.user?.id;
 
   if (!userId) return res.status(401).json({ error: "Not authorized" });
-  if (!phone || !address) return res.status(400).json({ error: "Phone and address are required" });
 
   try {
     const updated = await sql`
       UPDATE users
-      SET phone = ${phone}, address = ${address}
+      SET
+        phone = COALESCE(${phone}, phone),
+        address = COALESCE(${address}, address),
+        avatar = COALESCE(${avatar}, avatar)
       WHERE id = ${userId}
-      RETURNING id, name, email, phone, address
+      RETURNING id, name, email, phone, address, avatar
     `;
     res.json({ message: "Profile updated", user: updated[0] });
   } catch (err) {
@@ -115,13 +117,14 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+
 export const getProfile = async (req, res) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ error: "Not authorized" });
 
   try {
     const user = await sql`
-      SELECT id, name, email, phone, address
+      SELECT id, name, email, phone, address, district, avatar
       FROM users
       WHERE id = ${userId}
     `;

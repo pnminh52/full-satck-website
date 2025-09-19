@@ -12,21 +12,38 @@ const UserMenu = ({ handdleLogOut }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4  ">
-      {buttons.map((btn, idx) => (
-       
-          <Link
-            to={btn.link}
-            key={idx}
-            className="flex border-b border-gray-400 items-center justify-between gap-2 px-4 py-3 hover:bg-gray-100"
-          >
-           <div className="flex items-center gap-2">
-           <img src={btn.icon} alt={btn.label} className="w-5 h-5" />
-           {btn.label}
-           </div>
-            <img src="https://www.goodsmile.com/img/icon/arrow-paging.svg" alt="" />
-          </Link>
-      
-      ))}
+     {buttons.map((btn, idx) => {
+  if (btn.onClick) {
+    return (
+      <button
+        key={idx}
+        onClick={btn.onClick}
+        className="w-full text-left flex border-b border-gray-400 items-center justify-between gap-2 px-4 py-3 hover:bg-gray-100"
+      >
+        <div className="flex items-center gap-2">
+          <img src={btn.icon} alt={btn.label} className="w-5 h-5" />
+          {btn.label}
+        </div>
+        <img src="https://www.goodsmile.com/img/icon/arrow-paging.svg" alt="" />
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      to={btn.link}
+      key={idx}
+      className="flex border-b border-gray-400 items-center justify-between gap-2 px-4 py-3 hover:bg-gray-100"
+    >
+      <div className="flex items-center gap-2">
+        <img src={btn.icon} alt={btn.label} className="w-5 h-5" />
+        {btn.label}
+      </div>
+      <img src="https://www.goodsmile.com/img/icon/arrow-paging.svg" alt="" />
+    </Link>
+  );
+})}
+
     </div>
   );
 };

@@ -19,7 +19,7 @@ const Profile = () => {
       <div className="py-6 space-y-6 ">
         <p className="text-2xl font-semibold">My Account</p>
         <ProfileCard />
-       <UserMenu />
+       <UserMenu handdleLogOut={handdleLogOut}/>
       </div>
     
     </div>

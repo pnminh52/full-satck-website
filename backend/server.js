@@ -12,6 +12,7 @@ import vnPaypaymentRoutes from "./routes/vnPayPaymentRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js";
 import shippingRoutes from "./routes/shippingRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js"
 
 
 
@@ -22,9 +23,11 @@ import { aj } from "./lib/arcjetConfig.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3000"],
+  credentials: true,
+}));
 app.use(express.json());
-app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 
@@ -71,6 +74,7 @@ app.use("/api/payment", vnPaypaymentRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/shipping", shippingRoutes);
+app.use("/api/upload", uploadRoutes);
 
 
 
@@ -131,10 +135,12 @@ CREATE TABLE IF NOT EXISTS shipping (
   CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  district TEXT, 
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,        -- hash password
   phone VARCHAR(20),                     -- số điện thoại
   address TEXT,                          -- địa chỉ mặc định
+  avatar TEXT,
   role VARCHAR(50) DEFAULT 'customer',   -- phân quyền: customer/admin
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
