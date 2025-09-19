@@ -11,18 +11,18 @@ const PriceInfo = ({ cartItems }) => {
   const grandTotal = subtotal + (shippingFee ?? 0);
 
   return (
-    <div className="mt-4 text-right">
+    <div className=" ">
       <p className="font-bold">
         Subtotal: {subtotal.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
       </p>
 
-      <p className="font-bold">
+      {/* <p className="font-bold">
         Shipping: {shippingFee === null ? "Đang tính phí..." : shippingFee.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
       </p>
 
       <p className="font-bold text-lg">
         Grand Total: {shippingFee === null ? "Đang tính tổng..." : grandTotal.toLocaleString("vi-VN", { style: "currency", currency: "VND" })}
-      </p>
+      </p> */}
     </div>
   );
 };

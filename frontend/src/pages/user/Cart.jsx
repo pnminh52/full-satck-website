@@ -6,9 +6,10 @@ import {
   clearCart,
 } from "../../api/cart";
 import useAuth from "../../hook/useAuth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useToast from "../../hook/useToast";
 import PriceInfo from './../../components/user/cart/PriceInfo';
+import LeftSide from './../../components/user/cart/LeftSide';
 
 const Cart = () => {
   const { user } = useAuth();
@@ -93,8 +94,8 @@ const Cart = () => {
   if (cartItems.length === 0) return <p>Your cart is empty.</p>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+    <div className="max-w-screen-xl mx-auto px-50">
+      <h1 className="text-2xl font-semibold py-6">Your Cart</h1>
 
       {cartItems.length >= 2 && (
         <div className="mb-4 flex justify-end">
@@ -107,57 +108,10 @@ const Cart = () => {
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
-        {cartItems.map((item) => (
-          <div
-            key={item.cart_id}
-            className="flex justify-between items-center border p-2 rounded"
-          >
-            <div className="flex items-center gap-4">
-              {item.base_image && (
-                <img
-                  src={item.base_image}
-                  alt={item.name}
-                  className="w-16 h-16 object-cover rounded"
-                />
-              )}
-              <div>
-                <p className="font-semibold">{item.name}</p>
-                <p className="text-gray-500">
-                  US${Number(item.price).toFixed(2)}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                className="border px-2 rounded"
-                onClick={() =>
-                  handleUpdateQuantity(item.cart_id, item.quantity - 1)
-                }
-              >
-                -
-              </button>
-              <span>{item.quantity}</span>
-              <button
-                className="border px-2 rounded"
-                onClick={() =>
-                  handleUpdateQuantity(item.cart_id, item.quantity + 1)
-                }
-              >
-                +
-              </button>
-              <button
-                className="text-red-500 font-semibold"
-                onClick={() => handleDelete(item.cart_id)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <PriceInfo cartItems={cartItems} />
+   <div className="flex gap-6 items-center">
+   <LeftSide cartItems={cartItems} handleUpdateQuantity={handleUpdateQuantity} handleDelete={handleDelete} />
+   <PriceInfo cartItems={cartItems} />
+   </div>
 
       <div className="mt-6 flex justify-end">
         <button
