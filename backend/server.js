@@ -11,6 +11,7 @@ import userRoutes from "./routes/userRoutes.js"
 import vnPaypaymentRoutes from "./routes/vnPayPaymentRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js";
 import shippingRoutes from "./routes/shippingRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 
 
@@ -68,6 +69,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payment", vnPaypaymentRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/shipping", shippingRoutes);
 
 
@@ -198,6 +200,16 @@ await sql`
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `;
+
+await sql `
+CREATE TABLE IF NOT EXISTS wishlist (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE CASCADE,
+  product_id INT REFERENCES products(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, product_id)  -- tránh lưu trùng sản phẩm
+);
+`
 
 
     console.log("✅ Database initialized successfully (Apple schema)");

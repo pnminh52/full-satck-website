@@ -3,7 +3,7 @@ import React from 'react'
 const DetailSection = ({ product }) => {
     return (
         <div>
-            <div className='space-y-4 py-4'>
+            <div className='space-y-4 sm:py-4 py-0'>
                 <div className=' space-y-2'>
                     <p className='py-4 font-semibold text-lg border-b border-gray-400'>Product Description </p>
                     <p>{product.description}</p>

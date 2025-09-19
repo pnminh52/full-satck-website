@@ -28,15 +28,7 @@ const ProductCard = ({ products, columns = 4 }) => {
                                     className="w-full h-full object-cover rounded-lg"
                                 />
 
-                                {/* {p.stock === 0 && (
-                                    <>
-                                          <div className="absolute inset-0 bg-gray-400 opacity-50 z-10"></div>
-                                        <div className="absolute inset-0 flex items-center justify-center z-2">
-                                            <div className="w-[1px] h-full bg-white rotate-45 origin-center"></div>
-                                            <div className="w-[1px] h-full bg-white -rotate-45 origin-center absolute"></div>
-                                        </div>
-                                    </>
-                                )} */}
+                              
                             </div>
 
                             <div className="w-full py-1 flex space-y-1 justify-center items-center">

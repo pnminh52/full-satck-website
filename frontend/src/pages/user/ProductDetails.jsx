@@ -32,19 +32,20 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-25 py-10 flex gap-4">
-      {/* Left */}
-      <div className="w-[70%]">
-        <LeftSide product={product} />
-      </div>
+    <div className="sm:max-w-screen-2xl w-full mx-auto px-0 sm:px-25 py-0 sm:py-10 flex flex-col sm:flex-row gap-8">
+    {/* Left */}
+    <div className="w-full sm:w-[70%]">
+      <LeftSide product={product} />
+    </div>
   
-      {/* Right */}
-      <div className="w-[30%]">
-        <div className="sticky top-4">
-          <RightSide product={product} />
-        </div>
+    {/* Right */}
+    <div className="w-full sm:w-[30%]">
+      <div className="sticky top-6">
+        <RightSide product={product} />
       </div>
     </div>
+  </div>
+  
   );
   
 };

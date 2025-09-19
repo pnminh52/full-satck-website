@@ -12,9 +12,10 @@ import CategoryEdit from "./pages/admin/category/CategoryEdit";
 import Homepage from "./pages/user/Homepage";
 import ForgotPassword from "./pages/user/ForgotPassword";
 import ResetPassword from "./pages/user/ResetPassword";
+import NotFound from "./pages/user/NotFound";
 import UserLayout from "./layouts/UserLayout";
 
-import AdminLayout from "./layouts/AdminLayout"; 
+import AdminLayout from "./layouts/AdminLayout";
 import ProductDetails from "./pages/user/ProductDetails";
 import ListProduct from "./pages/user/ListProduct";
 import Login from "./pages/user/Login";
@@ -23,51 +24,51 @@ import Cart from "./pages/user/Cart";
 import CheckOut from "./pages/user/CheckOut";
 import Profile from "./pages/user/Profile";
 import Order from "./pages/user/Order";
+import Wishlist from "./pages/user/Wishlist";
 function App() {
   return (
-    <Router>
-        <ToastContainer 
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-      />
-      <Routes>
-    
-        {/* User routes */}
-        <Route element={<UserLayout />}>
-          <Route path="/" element={<Homepage />} />
-          <Route path="/product" element={<ListProduct />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
-          <Route path="/profile/:id" element={<Profile />} />
-          <Route path="/order" element={<Order />} />
-
-          <Route path="/forgot-password" element={ <ForgotPassword/>} />
-<Route path="/reset-password" element={<ResetPassword />} />
-
-
-       
-        </Route>
-
-        {/* Admin routes với AdminLayout */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<ProductList />} />
-          <Route path="products/add" element={<ProductAdd />} />
-          <Route path="products/edit/:id" element={<ProductEdit />} />
-          <Route path="categories" element={<CategoryList />} />
-          <Route path="categories/add" element={<CategoryAdd />} />
-          <Route path="categories/edit/:id" element={<CategoryEdit />} />
-        </Route>
-      </Routes>
-    </Router>
+    <div className="select-none">
+      <Router>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+        />
+        <Routes>
+          {/* User */}
+          <Route element={<UserLayout />}>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/product" element={<ListProduct />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<CheckOut />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            <Route path="/order" element={<Order />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="*" element={<NotFound />} />
+            
+          </Route>
+          {/* Admin */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="products/add" element={<ProductAdd />} />
+            <Route path="products/edit/:id" element={<ProductEdit />} />
+            <Route path="categories" element={<CategoryList />} />
+            <Route path="categories/add" element={<CategoryAdd />} />
+            <Route path="categories/edit/:id" element={<CategoryEdit />} />
+          </Route>
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
