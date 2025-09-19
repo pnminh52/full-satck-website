@@ -25,6 +25,7 @@ import CheckOut from "./pages/user/CheckOut";
 import Profile from "./pages/user/Profile";
 import Order from "./pages/user/Order";
 import Wishlist from "./pages/user/Wishlist";
+import Search from "antd/es/transfer/search";
 function App() {
   return (
     <div className="select-none">
@@ -46,6 +47,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckOut />} />
             <Route path="/profile/:id" element={<Profile />} />
@@ -54,7 +56,6 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
-            
           </Route>
           {/* Admin */}
           <Route path="/admin" element={<AdminLayout />}>
