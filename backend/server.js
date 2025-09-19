@@ -10,6 +10,7 @@ import cartRoutes from "./routes/cartRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 import vnPaypaymentRoutes from "./routes/vnPayPaymentRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js";
+import shippingRoutes from "./routes/shippingRoutes.js";
 
 
 
@@ -67,6 +68,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payment", vnPaypaymentRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/shipping", shippingRoutes);
 
 
 
@@ -113,6 +115,15 @@ CREATE TABLE IF NOT EXISTS products (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
+
+await sql`
+CREATE TABLE IF NOT EXISTS shipping (
+  id SERIAL PRIMARY KEY,
+  region VARCHAR(255) NOT NULL,
+  min_order DECIMAL(10,2),
+  fee DECIMAL(10,2) NOT NULL
+);
+`
 
   await sql` 
   CREATE TABLE IF NOT EXISTS users (
@@ -173,16 +184,7 @@ await sql`
   );
 `;
 
-// Seed dữ liệu mặc định cho order_status
-await sql`
- CREATE TABLE IF NOT EXISTS order_status (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE,
-  description TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
-`;
 
 // order
 await sql`
@@ -190,6 +192,7 @@ await sql`
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     total DECIMAL(10,2) NOT NULL,
+     shipping_fee DECIMAL(10,2) DEFAULT 0,
     status_id INT REFERENCES order_status(id) ON DELETE SET NULL,
    address TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

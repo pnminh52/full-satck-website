@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { getCart, deleteCartItem, updateCartItem } from "../../api/cart";
+import {
+  getCart,
+  deleteCartItem,
+  updateCartItem,
+  clearCart,
+} from "../../api/cart";
 import useAuth from "../../hook/useAuth";
 import { useNavigate } from "react-router-dom";
+import useToast from "../../hook/useToast";
+import PriceInfo from './../../components/user/cart/PriceInfo';
 
 const Cart = () => {
   const { user } = useAuth();
@@ -9,22 +16,22 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const toast = useToast();
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const res = await getCart(token);
       const items = Array.isArray(res.data)
-  ? res.data.map((item) => ({
-      ...item,
-      product_id: item.product_id || item.id, 
-    }))
-  : [];
-setCartItems(items);
-
+        ? res.data.map((item) => ({
+            ...item,
+            product_id: item.product_id || item.id,
+          }))
+        : [];
+      setCartItems(items);
     } catch (error) {
       console.error("Failed to fetch cart:", error);
-      alert("Failed to fetch cart");
+      toast.error("Failed to fetch cart");
     } finally {
       setLoading(false);
     }
@@ -40,14 +47,31 @@ setCartItems(items);
     try {
       await deleteCartItem(cartId, token);
       setCartItems(cartItems.filter((item) => item.cart_id !== cartId));
+      toast.success("Item removed");
     } catch (error) {
       console.error("Failed to delete item:", error);
-      alert("Failed to delete item");
+      toast.error("Failed to delete item");
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      await clearCart(token);
+      setCartItems([]);
+      toast.success("All items removed");
+    } catch (error) {
+      console.error("Failed to clear cart:", error);
+      toast.error("Failed to clear cart");
     }
   };
 
   const handleUpdateQuantity = async (cartId, quantity) => {
     if (quantity < 1) return;
+    if (quantity > 3) {
+      toast.error("Maximum 3 units per item");
+      return;
+    }
+
     try {
       await updateCartItem(cartId, { quantity }, token);
       setCartItems(
@@ -57,7 +81,7 @@ setCartItems(items);
       );
     } catch (error) {
       console.error("Failed to update quantity:", error);
-      alert("Failed to update quantity");
+      toast.error("Failed to update quantity");
     }
   };
 
@@ -71,6 +95,18 @@ setCartItems(items);
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+
+      {cartItems.length >= 2 && (
+        <div className="mb-4 flex justify-end">
+          <button
+            onClick={handleDeleteAll}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          >
+            Delete All
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
         {cartItems.map((item) => (
           <div
@@ -92,6 +128,7 @@ setCartItems(items);
                 </p>
               </div>
             </div>
+
             <div className="flex items-center gap-2">
               <button
                 className="border px-2 rounded"
@@ -120,8 +157,8 @@ setCartItems(items);
           </div>
         ))}
       </div>
+      <PriceInfo cartItems={cartItems} />
 
-      {/* Nút Checkout */}
       <div className="mt-6 flex justify-end">
         <button
           onClick={handleCheckout}

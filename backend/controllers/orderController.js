@@ -1,6 +1,5 @@
 import { sql } from "../config/db.js";
 
-// Lấy danh sách đơn hàng của user
 export const getUserOrders = async (req, res) => {
   const userId = req.user.id; // giả sử bạn đã middleware auth để attach user
   try {
@@ -17,7 +16,6 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-// Lấy chi tiết đơn hàng
 export const getOrderDetail = async (req, res) => {
   const orderId = req.params.id;
   const userId = req.user.id;
@@ -44,52 +42,57 @@ export const getOrderDetail = async (req, res) => {
   }
 };
 
-// Tạo đơn hàng (COD)
 export const createOrder = async (req, res) => {
-  const userId = req.user.id;
-  const { items, address } = req.body; // items: [{ product_id, quantity }]
-  console.log("Body received:", req.body);
-
-  if (!items || !items.length) return res.status(400).json({ error: "No items in order" });
-
-  try {
-    // Tính tổng
-    let total = 0;
-    for (const item of items) {
-      const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
-      if (!product.length) return res.status(400).json({ error: "Product not found" });
-      if (product[0].stock < item.quantity) return res.status(400).json({ error: "Insufficient stock" });
-
-      total += Number(product[0].price) * item.quantity;
-    }
-
-    // Tạo đơn hàng
-    const [order] = await sql`
-      INSERT INTO orders (user_id, total, status_id, address)
-      VALUES (${userId}, ${total}, 1, ${address}) RETURNING *
-    `;
-
-    // Thêm chi tiết sản phẩm
-    for (const item of items) {
-      const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
-      await sql`
-        INSERT INTO order_items (order_id, product_id, quantity, price)
-        VALUES (${order.id}, ${item.product_id}, ${item.quantity}, ${product[0].price})
+    const userId = req.user.id;
+    const { items, address, shippingFee } = req.body; 
+    // console.log("Body received:", req.body);
+  
+    if (!items || !items.length)
+      return res.status(400).json({ error: "No items in order" });
+  
+    try {
+      let totalProducts = 0;
+      for (const item of items) {
+        const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
+        if (!product.length)
+          return res.status(400).json({ error: "Product not found" });
+        if (product[0].stock < item.quantity)
+          return res.status(400).json({ error: "Insufficient stock" });
+        totalProducts += Number(product[0].price) * item.quantity;
+      }
+  
+      const totalWithShip = totalProducts + Number(shippingFee || 0);
+  
+      const [order] = await sql`
+        INSERT INTO orders (user_id, total, shipping_fee, status_id, address)
+        VALUES (${userId}, ${totalWithShip}, ${shippingFee}, 1, ${address})
+        RETURNING *
       `;
-
-      // Trừ tồn kho
-      await sql`
-        UPDATE products SET stock = stock - ${item.quantity} WHERE id = ${item.product_id}
-      `;
+  
+      for (const item of items) {
+        const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
+        await sql`
+          INSERT INTO order_items (order_id, product_id, quantity, price)
+          VALUES (${order.id}, ${item.product_id}, ${item.quantity}, ${product[0].price})
+        `;
+        await sql`
+          UPDATE products SET stock = stock - ${item.quantity} WHERE id = ${item.product_id}
+        `;
+      }
+  
+      res.status(201).json({
+        message: "Order created successfully",
+        orderId: order.id,
+        shippingFee,
+        total: totalWithShip,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message });
     }
+  };
+  
 
-    res.status(201).json({ message: "Order created successfully", orderId: order.id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Cập nhật trạng thái đơn hàng (admin)
 export const updateOrderStatus = async (req, res) => {
   const orderId = req.params.id;
   const { status_id } = req.body;
