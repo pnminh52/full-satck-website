@@ -9,6 +9,9 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 import vnPaypaymentRoutes from "./routes/vnPayPaymentRoutes.js"
+import orderRoutes from "./routes/orderRoutes.js";
+
+
 
 
 import { sql } from "./config/db.js";
@@ -59,12 +62,11 @@ app.use(async (req, res, next) => {
 
 // Dùng route
 app.use("/api/products", productRoutes);
-
 app.use("/api/categories", categoryRoutes);
-
 app.use("/api/cart", cartRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payment", vnPaypaymentRoutes);
+app.use("/api/orders", orderRoutes);
 
 
 
@@ -161,18 +163,39 @@ CREATE TABLE IF NOT EXISTS password_resets (
 );
 
   `;
-    // 4. Orders
-    await sql`
-     CREATE TABLE IF NOT EXISTS orders (
+// order_status
+await sql`
+  CREATE TABLE IF NOT EXISTS order_status (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+// Seed dữ liệu mặc định cho order_status
+await sql`
+ CREATE TABLE IF NOT EXISTS order_status (
   id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES users(id) ON DELETE CASCADE,
-  total DECIMAL(10,2) NOT NULL,
-  status VARCHAR(50) DEFAULT 'pending',     -- pending, paid, shipped, completed, cancelled
-  shipping_address TEXT,                    -- địa chỉ giao hàng (nếu muốn tách riêng)
+  name VARCHAR(50) NOT NULL UNIQUE,
+  description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-    `;
+`;
+
+// order
+await sql`
+  CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    total DECIMAL(10,2) NOT NULL,
+    status_id INT REFERENCES order_status(id) ON DELETE SET NULL,
+   address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
 
     console.log("✅ Database initialized successfully (Apple schema)");
   } catch (error) {

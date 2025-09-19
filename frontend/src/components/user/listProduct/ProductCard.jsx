@@ -68,12 +68,12 @@ const ProductCard = ({ products, columns = 4 }) => {
 
                                 <h2 className="font-semibold text-sm py-1">{p.name}</h2>
                                 <p className="text-gray-600 text-sm">
-                                    US$
-                                    {(Number(p.price) / 100).toLocaleString("en-US", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                    })}
-                                </p>
+  {(Number(p.price)).toLocaleString("vi-VN",{
+    style: "currency",
+    currency: "VND",
+  })}
+</p>
+
                             </div>
                         </Link>
                     ))}

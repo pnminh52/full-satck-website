@@ -14,8 +14,14 @@ const Cart = () => {
     try {
       setLoading(true);
       const res = await getCart(token);
-      const items = Array.isArray(res.data) ? res.data : [];
-      setCartItems(items);
+      const items = Array.isArray(res.data)
+  ? res.data.map((item) => ({
+      ...item,
+      product_id: item.product_id || item.id, 
+    }))
+  : [];
+setCartItems(items);
+
     } catch (error) {
       console.error("Failed to fetch cart:", error);
       alert("Failed to fetch cart");

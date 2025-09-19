@@ -3,15 +3,10 @@ import useAuth from "../../hook/useAuth";
 import useToast from "../../hook/useToast";
 const Header = () => {
   const toast = useToast();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-    toast.success("Logout successful!");
-  };
   const handleCartClick=(e)=>{
 
 if(!user){
@@ -46,19 +41,22 @@ if(!user){
   </li>
 </Link>
 
-          {user ? (
-            <>
-              <li>Xin chào, {user.name}</li>
-              <button onClick={handleLogout}>Logout</button>
-            </>
-          ) : (
-            <Link to="/login">
-            <li className="flex gap-2 font-semibold text-[#9FA0A0] items-center">
-            <img src="https://www.goodsmile.com/img/icon/user.svg" alt="" />
-                Login
-              </li>
-            </Link>
-          )}
+{user ? (
+  <Link to={`/profile/${user.id}`}>
+    <li className="flex gap-2 font-semibold text-[#9FA0A0] items-center">
+      <img src="https://www.goodsmile.com/img/icon/user.svg" alt="" />
+      My Account
+    </li>
+  </Link>
+) : (
+  <Link to="/login">
+    <li className="flex gap-2 font-semibold text-[#9FA0A0] items-center">
+      <img src="https://www.goodsmile.com/img/icon/user.svg" alt="" />
+      Login
+    </li>
+  </Link>
+)}
+
         </ul>
       </div>
         <div className="block md:hidden">

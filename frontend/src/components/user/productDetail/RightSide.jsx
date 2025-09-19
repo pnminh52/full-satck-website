@@ -51,13 +51,12 @@ const RightSide = ({ product  }) => {
           </p>
         )}
 
-        <p className="text-black font-semibold text-lg py-4">
-          US$
-          {(Number(product.price) / 100).toLocaleString("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
-        </p>
+        <p className="text-black  text-lg py-4">
+  {(Number(product.price)).toLocaleString("vi-VN",{
+    style: "currency",
+    currency: "VND",
+  })}
+</p>
 
        {/* {
         product.status==="preorder"&&( */}

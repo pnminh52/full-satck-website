@@ -24,13 +24,11 @@ export const getCart = async (req, res) => {
 };
 
 
-// Thêm sản phẩm vào giỏ
 export const addToCart = async (req, res) => {
   const userId = req.user.id;
   const { product_id, quantity } = req.body;
 
   try {
-    // check xem sp đã có trong giỏ chưa
     const existing = await sql`
       SELECT * FROM cart WHERE user_id = ${userId} AND product_id = ${product_id}
     `;
@@ -56,10 +54,9 @@ export const addToCart = async (req, res) => {
   }
 };
 
-// Cập nhật số lượng
 export const updateCartItem = async (req, res) => {
   const userId = req.user.id;
-  const { id } = req.params; // id của cart item
+  const { id } = req.params; 
   const { quantity } = req.body;
 
   try {
@@ -76,7 +73,6 @@ export const updateCartItem = async (req, res) => {
   }
 };
 
-// Xóa 1 item khỏi giỏ
 export const deleteCartItem = async (req, res) => {
   const userId = req.user.id;
   const { id } = req.params;
@@ -87,5 +83,14 @@ export const deleteCartItem = async (req, res) => {
   } catch (err) {
     console.error("❌ Delete cart error:", err.message);
     res.status(500).json({ error: "Failed to delete cart item" });
+  }
+};
+export const clearCart = async (req, res) => {
+  try {
+    await sql`DELETE FROM cart WHERE user_id = ${req.user.id}`;
+    res.json({ message: "Cart cleared successfully" });
+  } catch (err) {
+    console.error("❌ Clear cart error:", err.message);
+    res.status(500).json({ error: "Could not clear cart" });
   }
 };

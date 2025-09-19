@@ -3,11 +3,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendResetPasswordEmail } from "../lib/mailerConfig.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
-// ---------- Register ----------
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -24,7 +24,6 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// ---------- Login ----------
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -42,7 +41,6 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// ---------- Forgot Password ----------
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
@@ -72,7 +70,6 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// ---------- Reset Password ----------
 export const resetPassword = async (req, res) => {
   const { email, token, newPassword } = req.body;
   try {
@@ -96,3 +93,43 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ error: "Could not reset password" });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  const { phone, address } = req.body;
+  const userId = req.user?.id; 
+
+  if (!userId) return res.status(401).json({ error: "Not authorized" });
+  if (!phone || !address) return res.status(400).json({ error: "Phone and address are required" });
+
+  try {
+    const updated = await sql`
+      UPDATE users
+      SET phone = ${phone}, address = ${address}
+      WHERE id = ${userId}
+      RETURNING id, name, email, phone, address
+    `;
+    res.json({ message: "Profile updated", user: updated[0] });
+  } catch (err) {
+    console.error("❌ Update profile error:", err.message);
+    res.status(500).json({ error: "Could not update profile" });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  const userId = req.user?.id;
+  if (!userId) return res.status(401).json({ error: "Not authorized" });
+
+  try {
+    const user = await sql`
+      SELECT id, name, email, phone, address
+      FROM users
+      WHERE id = ${userId}
+    `;
+    if (!user.length) return res.status(404).json({ error: "User not found" });
+    res.json(user[0]);
+  } catch (err) {
+    console.error("❌ Get profile error:", err.message);
+    res.status(500).json({ error: "Could not get profile" });
+  }
+};
+
