@@ -37,41 +37,58 @@ const Login = () => {
   
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg">
-      <h2 className="text-xl font-semibold mb-4">Login</h2>
-      {error && <p className="text-red-500 mb-2">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="max-w-screen-sm mx-auto px-4 sm:px-30 ">
+      <div className=" mx-auto py-10  ">
+      <h2 className="text-2xl  w-full flex justify-center font-semibold ">Login</h2>
+      <form onSubmit={handleSubmit} className=" ">
+      <div className="space-y-4 py-4">
+      <div className="space-y-1">
+       <p className="text-sm font-semibold">Email Address</p>
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email address"
           value={form.email}
           onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border border-gray-400 px-3 py-2 rounded"
           required
         />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-          required
-        />
+       </div>
+       <div className="space-y-1">
+         <p className="text-sm font-semibold">Password (Must include at least one uppercase letter, one lowercase letter, one number and one special character)</p>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full border border-gray-400 px-3 py-2 rounded"
+                  required
+                />
+       </div>
+      </div>
         <button
           type="submit"
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+          className="w-full bg-[#FF6900] text-white py-3 rounded-full font-semibold cursor-pointer"
         >
           Login
         </button>
       </form>
-      <div className="mt-2 text-right">
-        <Link to="/forgot-password" className="text-blue-600 hover:underline text-sm">
-          Forgot Password?
+      <div className="py-4 flex item-center justify-center">
+        <Link to="/forgot-password" className="text-black  underline  ">
+        Forgot your email address or password?
         </Link>
       </div>
+     
     </div>
+    <div className="space-y-4">
+        <p className="text-xl font-semibold flex justify-center w-full">Don’t have an account?</p>
+       <Link to={"/register"}>
+       <button    type="submit"       className="w-full bg-[#FF6900] text-white py-3 rounded-full font-semibold cursor-pointer"
+        >New member registration</button></Link>
+      </div>
+    </div>
+    
   );
 };
 

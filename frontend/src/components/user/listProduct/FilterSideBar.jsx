@@ -6,14 +6,9 @@ import PopupFilters from "./PopupFilters";
 const { Option } = Select;
 const { Search } = Input;
 
-const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTerm }) => {
+const FilterSideBar = ({setShowFilter,statusFilter,setSortPrice, setSelectedSeries, setSelectedCategories, setSelectedManufacturers, setStockFilter, setStatusFilter, sortPrice,stockFilter, selectedSeries, selectedCategories, selectedManufacturers, products, setFilteredProducts, searchTerm, setSearchTerm }) => {
 
-  const [selectedSeries, setSelectedSeries] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedManufacturers, setSelectedManufacturers] = useState([]);
-  const [stockFilter, setStockFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [sortPrice, setSortPrice] = useState("");
+
 
   const seriesOptions = [...new Set(products.map((p) => p.series).filter(Boolean))];
   const categoryOptions = [...new Set(products.map((p) => p.category_name).filter(Boolean))];
@@ -50,23 +45,30 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
   ]);
 
   const selectStyle = { width: "100%", marginBottom: "12px" }; // full width + margin between rows
-
+  const handleMobileChange = (setter) => (value) => {
+    setter(value);
+    if (setShowFilter) setShowFilter(false); 
+  };
+  
   return (
     <div className="space-y-3">
-      <Search
-  placeholder="Search..."
-  allowClear
-  size="large"   // 👈 để đồng bộ chiều cao
-  onSearch={(value) => setSearchTerm(value)}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  value={searchTerm}
-/>
+<div className="hidden sm:block">
+        <Input
+    placeholder="Search..."
+    allowClear
+    size="large"   // 👈 để đồng bộ chiều cao
+    onSearch={(value) => setSearchTerm(value)}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    value={searchTerm}
+  />
+
+</div>
 
 <div className="flex flex-col gap-0 ">
   <Select
     placeholder="Stock"
     value={stockFilter}
-    onChange={setStockFilter}
+    onChange={handleMobileChange(setStockFilter)}
     allowClear
     style={selectStyle}
     size="large"
@@ -80,7 +82,7 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
   <Select
     placeholder="Status"
     value={statusFilter}
-    onChange={setStatusFilter}
+    onChange={handleMobileChange(setStatusFilter)}
     allowClear
     style={selectStyle}
     size="large"
@@ -94,7 +96,7 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
   <Select
     placeholder="Sort Price"
     value={sortPrice}
-    onChange={setSortPrice}
+    onChange={handleMobileChange(setSortPrice)}
     style={selectStyle}
     size="large"
   >
@@ -112,18 +114,21 @@ const FilterSideBar = ({ products, setFilteredProducts, searchTerm, setSearchTer
         options={seriesOptions}
         selected={selectedSeries}
         setSelected={setSelectedSeries}
+        setShowFilter={setShowFilter}
       />
       <PopupFilters
         placeholder="Search by Category"
         options={categoryOptions}
         selected={selectedCategories}
         setSelected={setSelectedCategories}
+        setShowFilter={setShowFilter}
       />
       <PopupFilters
         placeholder="Search by Manufacturer"
         options={manufacturerOptions}
         selected={selectedManufacturers}
         setSelected={setSelectedManufacturers}
+        setShowFilter={setShowFilter}
       />
        </div>
     </div>

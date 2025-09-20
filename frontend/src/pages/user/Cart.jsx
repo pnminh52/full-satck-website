@@ -8,8 +8,9 @@ import {
 import useAuth from "../../hook/useAuth";
 import { Link, useNavigate } from "react-router-dom";
 import useToast from "../../hook/useToast";
-import PriceInfo from './../../components/user/cart/PriceInfo';
-import LeftSide from './../../components/user/cart/LeftSide';
+import PriceInfo from "./../../components/user/cart/PriceInfo";
+import LeftSide from "./../../components/user/cart/LeftSide";
+import Loader from "./../../components/Loader";
 
 const Cart = () => {
   const { user } = useAuth();
@@ -90,36 +91,30 @@ const Cart = () => {
     navigate("/checkout", { state: { cartItems } });
   };
 
-  if (loading) return <p>Loading cart...</p>;
+  if (loading) {
+    return (
+      <p >
+        <Loader />
+      </p>
+    );
+  }
   if (cartItems.length === 0) return <p>Your cart is empty.</p>;
 
   return (
-    <div className="max-w-screen-xl mx-auto px-50">
-      <h1 className="text-2xl font-semibold py-6">Your Cart</h1>
+    <div className="max-w-screen-xl w-full mx-auto sm:px-30 px-4">
+      <h1 className="sm:text-2xl text-xl  font-semibold sm:py-6 py-4">Your Cart</h1>
 
-      {cartItems.length >= 2 && (
-        <div className="mb-4 flex justify-end">
-          <button
-            onClick={handleDeleteAll}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            Delete All
-          </button>
+      <div className="flex flex-col lg:flex-row gap-4 ">
+        <div className="w-full sm:w-[70%]">
+          <LeftSide
+            cartItems={cartItems}
+            handleUpdateQuantity={handleUpdateQuantity}
+            handleDelete={handleDelete}
+          />
         </div>
-      )}
-
-   <div className="flex gap-6 items-center">
-   <LeftSide cartItems={cartItems} handleUpdateQuantity={handleUpdateQuantity} handleDelete={handleDelete} />
-   <PriceInfo cartItems={cartItems} />
-   </div>
-
-      <div className="mt-6 flex justify-end">
-        <button
-          onClick={handleCheckout}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Proceed to Checkout
-        </button>
+        <div className="w-full sm:w-[30%] sticky top-4 self-start">
+          <PriceInfo handleCheckout={handleCheckout} cartItems={cartItems} />
+        </div>
       </div>
     </div>
   );

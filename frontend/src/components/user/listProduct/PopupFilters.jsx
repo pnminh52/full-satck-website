@@ -8,6 +8,7 @@ const PopupFilters = ({
   selected,
   setSelected,
   placeholder,
+  setShowFilter
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tempSelected, setTempSelected] = useState(selected);
@@ -114,14 +115,18 @@ const PopupFilters = ({
   width={400}
    style={{ borderRadius: "15px",  overflow: "hidden"}}
 >
-  <PopupCard
-    options={options}
-    tempSelected={tempSelected}
-    handleToggle={handleToggle}
-    handleClose={handleClose}
-    handleApply={handleApply}
-   
-  />
+<PopupCard
+  options={options}
+  tempSelected={tempSelected}
+  handleToggle={handleToggle}
+  handleClose={handleClose}
+  handleApply={() => {
+    handleApply();
+    if (setShowFilter) setShowFilter(false); 
+  }}
+  setShowFilter={setShowFilter} 
+/>
+
 </Modal>
     </div>
   );

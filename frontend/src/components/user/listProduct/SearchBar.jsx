@@ -32,7 +32,7 @@ const SearchBar = ({ filteredProducts }) => {
 
   return (
     <div>
-      <div className="w-full pb-6">
+      <div className="w-full sm:py-6 py-4">
         <p className="gap-1">
           <span className="text-2xl font-semibold">{categoryName}</span>{" "}
           <span className="text-gray-600 text-lg">({filteredProducts.length})</span>

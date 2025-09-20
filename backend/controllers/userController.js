@@ -3,26 +3,25 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendResetPasswordEmail } from "../lib/mailerConfig.js";
-import { protect } from "../middleware/authMiddleware.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, address, district, phone } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await sql`
-      INSERT INTO users (name, email, password)
-      VALUES (${name}, ${email}, ${hashedPassword})
-      RETURNING id, name, email
+      INSERT INTO users (name, email, password, address, district, phone)
+      VALUES (${name}, ${email}, ${hashedPassword}, ${address}, ${district}, ${phone})
+      RETURNING id, name, email, address, district, phone
     `;
-    res.status(201).json({ message: "User registered", user: user[0] });
+    res.status(201).json(user[0]);
   } catch (err) {
-    console.error("❌ Register error:", err.message);
     res.status(500).json({ error: "Register failed" });
   }
 };
+
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;

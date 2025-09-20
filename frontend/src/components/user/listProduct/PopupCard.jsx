@@ -6,6 +6,7 @@ const PopupCard = ({
   tempSelected,
   options,
   handleToggle,
+  setShowFilter
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -57,11 +58,15 @@ const PopupCard = ({
        
       <div className="w-full ">
       <button
-          className="rounded-full cursor-pointer w-full py-2 font-semibold  bg-[#F06E00] text-white"
-          onClick={handleApply}
-        >
-          Apply
-        </button>
+  className="rounded-full cursor-pointer w-full py-2 font-semibold bg-[#F06E00] text-white"
+  onClick={() => {
+    handleApply();
+    setShowFilter(false); 
+  }}
+>
+  Apply
+</button>
+
       </div>
       </div>
   );
