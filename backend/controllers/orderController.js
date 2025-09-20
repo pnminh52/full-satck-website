@@ -43,54 +43,77 @@ export const getOrderDetail = async (req, res) => {
 };
 
 export const createOrder = async (req, res) => {
-    const userId = req.user.id;
-    const { items, address, shippingFee } = req.body; 
-    // console.log("Body received:", req.body);
-  
-    if (!items || !items.length)
-      return res.status(400).json({ error: "No items in order" });
-  
-    try {
-      let totalProducts = 0;
-      for (const item of items) {
-        const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
-        if (!product.length)
-          return res.status(400).json({ error: "Product not found" });
-        if (product[0].stock < item.quantity)
-          return res.status(400).json({ error: "Insufficient stock" });
-        totalProducts += Number(product[0].price) * item.quantity;
-      }
-  
-      const totalWithShip = totalProducts + Number(shippingFee || 0);
-  
-      const [order] = await sql`
-        INSERT INTO orders (user_id, total, shipping_fee, status_id, address)
-        VALUES (${userId}, ${totalWithShip}, ${shippingFee}, 1, ${address})
-        RETURNING *
-      `;
-  
-      for (const item of items) {
-        const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
-        await sql`
-          INSERT INTO order_items (order_id, product_id, quantity, price)
-          VALUES (${order.id}, ${item.product_id}, ${item.quantity}, ${product[0].price})
-        `;
-        await sql`
-          UPDATE products SET stock = stock - ${item.quantity} WHERE id = ${item.product_id}
-        `;
-      }
-  
-      res.status(201).json({
-        message: "Order created successfully",
-        orderId: order.id,
-        shippingFee,
-        total: totalWithShip,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
+  const userId = req.user.id;
+  const { items, address, selectedDistrict, shippingFee } = req.body;
+
+  if (!items || !items.length)
+    return res.status(400).json({ error: "No items in order" });
+
+  try {
+    // Tính tổng tiền sản phẩm
+    let totalProducts = 0;
+    for (const item of items) {
+      const product = await sql`SELECT price, stock FROM products WHERE id = ${item.product_id}`;
+      if (!product.length) return res.status(400).json({ error: "Product not found" });
+      if (product[0].stock < item.quantity) return res.status(400).json({ error: "Insufficient stock" });
+      totalProducts += Number(product[0].price) * item.quantity;
     }
-  };
+    const totalWithShip = totalProducts + Number(shippingFee || 0);
+
+    // Lấy address mặc định nếu frontend không gửi
+    let orderAddress = address;
+    if (!orderAddress) {
+      const [userRecord] = await sql`SELECT address, district FROM users WHERE id = ${userId}`;
+      orderAddress = userRecord.address;
+    }
+
+    // Tạo order
+    const [order] = await sql`
+      INSERT INTO orders (user_id, total, shipping_fee, status_id, address, district)
+      VALUES (${userId}, ${totalWithShip}, ${shippingFee}, 1, ${orderAddress}, ${selectedDistrict})
+      RETURNING *
+    `;
+
+    // Cập nhật mảng district trong users nếu district mới
+    const [userRecord] = await sql`SELECT district FROM users WHERE id = ${userId}`;
+    const userDistricts = userRecord.district || [];
+    if (selectedDistrict && !userDistricts.includes(selectedDistrict)) {
+      await sql`
+        UPDATE users
+        SET district = ${[...userDistricts, selectedDistrict]}
+        WHERE id = ${userId}
+      `;
+    }
+
+    // Thêm order items và trừ stock
+    for (const item of items) {
+      const product = await sql`SELECT price FROM products WHERE id = ${item.product_id}`;
+      await sql`
+        INSERT INTO order_items (order_id, product_id, quantity, price)
+        VALUES (${order.id}, ${item.product_id}, ${item.quantity}, ${product[0].price})
+      `;
+      await sql`
+        UPDATE products SET stock = stock - ${item.quantity} WHERE id = ${item.product_id}
+      `;
+    }
+
+    res.status(201).json({
+      message: "Order created successfully",
+      orderId: order.id,
+      shippingFee,
+      total: totalWithShip,
+      address: orderAddress,
+      district: selectedDistrict
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
+
   
 
 export const updateOrderStatus = async (req, res) => {

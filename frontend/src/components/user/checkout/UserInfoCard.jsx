@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import useAuth from "../../../hook/useAuth";
+import useToast from "../../../hook/useToast";
 
 const UserInfoCard = ({ onChange }) => {
-  const { user: authUser } = useAuth();
+  const toast = useToast();
   const [user, setUser] = useState(null);
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [newDistrict, setNewDistrict] = useState("");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -19,13 +20,20 @@ const UserInfoCard = ({ onChange }) => {
         });
         setUser(res.data);
 
-        setPhone(res.data.phone || "");
-        setAddress(res.data.address || "");
+        const initialDistricts = Array.isArray(res.data.district)
+          ? res.data.district
+          : res.data.district
+          ? [res.data.district]
+          : [];
 
-        onChange && onChange({
-          phone: res.data.phone || "",
-          address: res.data.address || ""
-        });
+        setDistricts(initialDistricts);
+        setSelectedDistrict(initialDistricts[0] || "");
+
+        onChange &&
+          onChange({
+            districts: initialDistricts,
+            selectedDistrict: initialDistricts[0] || "",
+          });
       } catch (err) {
         console.error("Failed to fetch user profile:", err);
       }
@@ -34,56 +42,103 @@ const UserInfoCard = ({ onChange }) => {
     fetchUserProfile();
   }, [onChange]);
 
-  const handlePhoneChange = (e) => {
-    setPhone(e.target.value);
-    onChange && onChange({ phone: e.target.value, address });
+  const handleNewDistrictChange = (e) => setNewDistrict(e.target.value);
+
+  const handleAddDistrict = () => {
+    const d = newDistrict.trim();
+    if (!d) return;
+
+    if (districts.length >= 3) {
+      toast.error("You can only add up to 3 districts!");
+      return;
+    }
+
+    if (districts.includes(d)) {
+      toast.error("This district already exists!");
+      return;
+    }
+
+    const updated = [...districts, d];
+    setDistricts(updated);
+    setNewDistrict("");
+    onChange && onChange({ districts: updated, selectedDistrict });
   };
 
-  const handleAddressChange = (e) => {
-    setAddress(e.target.value);
-    onChange && onChange({ phone, address: e.target.value });
+  const handleRemoveDistrict = (index) => {
+    const updated = districts.filter((_, i) => i !== index);
+    setDistricts(updated);
+    if (selectedDistrict === districts[index]) {
+      setSelectedDistrict(updated[0] || "");
+    }
+    onChange && onChange({ districts: updated, selectedDistrict: updated[0] || "" });
+  };
+
+  const handleSelectDistrict = (d) => {
+    setSelectedDistrict(d);
+    onChange && onChange({ districts, selectedDistrict: d });
   };
 
   if (!user) return null;
 
   return (
-    <div className="border p-4 rounded mb-4">
-      <h2 className="text-lg font-semibold mb-2">User Information</h2>
+    <div className="max-w-sm mx-auto border rounded-2xl shadow p-6 bg-white">
+      <div className="flex flex-col gap-4">
 
-      <div className="flex flex-col gap-2 mb-2">
-        <label>Name</label>
-        <input type="text" value={user.name} readOnly className="border rounded px-2 py-1 w-full bg-gray-100" />
-      </div>
+        {/* Thêm district mới */}
+        <div className="flex flex-col gap-2">
+          <label className="font-medium">Add New District/City</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newDistrict}
+              onChange={handleNewDistrictChange}
+              placeholder="Enter district/city"
+              className="border rounded px-3 py-2 flex-1"
+            />
+            <button
+              type="button"
+              onClick={handleAddDistrict}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Add
+            </button>
+          </div>
+        </div>
 
-      <div className="flex flex-col gap-2 mb-2">
-        <label>Email</label>
-        <input type="email" value={user.email} readOnly className="border rounded px-2 py-1 w-full bg-gray-100" />
-      </div>
+        {/* Danh sách district */}
+        <div className="flex flex-col gap-1">
+          <label className="font-medium">Saved Districts/Cities</label>
+          {districts.map((d, i) => (
+            <div
+              key={i}
+              className={`flex items-center justify-between border px-3 py-2 rounded ${
+                selectedDistrict === d ? "bg-blue-100" : "bg-gray-100"
+              }`}
+            >
+              <span
+                onClick={() => handleSelectDistrict(d)}
+                className="cursor-pointer"
+              >
+                {d}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleRemoveDistrict(i)}
+                className="text-red-500 font-bold"
+              >
+                x
+              </button>
+            </div>
+          ))}
+        </div>
 
-      <div className="flex flex-col gap-2 mb-2">
-        <label>Phone <span className="text-red-500">*</span></label>
-        <input
-          type="text"
-          value={phone}
-          onChange={handlePhoneChange}
-          className="border rounded px-2 py-1 w-full"
-          readOnly={!!user.phone}
-          placeholder={user.phone ? "" : "Enter your phone"}
-          required
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 mb-2">
-        <label>Address <span className="text-red-500">*</span></label>
-        <input
-          type="text"
-          value={address}
-          onChange={handleAddressChange}
-          className="border rounded px-2 py-1 w-full"
-          readOnly={!!user.address}
-          placeholder={user.address ? "" : "Enter your address"}
-          required
-        />
+        {/* District đang chọn */}
+        <div className="mt-2">
+          <label className="font-medium">Selected District for Order</label>
+          <div className="border rounded px-3 py-2 mt-1 bg-gray-50">
+            {selectedDistrict || "None"}
+          </div>
+        </div>
       </div>
     </div>
   );

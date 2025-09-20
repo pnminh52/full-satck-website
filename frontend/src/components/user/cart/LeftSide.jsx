@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 const LeftSide = ({ cartItems, handleUpdateQuantity, handleDelete }) => {
     return (
-       <div>
+   
          <div className="">
             <div className="flex flex-col gap-4">
                 {cartItems.map((item) => (
@@ -131,7 +131,7 @@ const LeftSide = ({ cartItems, handleUpdateQuantity, handleDelete }) => {
                     </div>
                 ))}
             </div>
-        </div>
+    
       
        </div>
     );

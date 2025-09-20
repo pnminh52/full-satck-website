@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS shipping (
   CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  district TEXT, 
+  district TEXT[], 
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,        -- hash password
   phone VARCHAR(20),                     -- số điện thoại
@@ -203,6 +203,7 @@ await sql`
      shipping_fee DECIMAL(10,2) DEFAULT 0,
     status_id INT REFERENCES order_status(id) ON DELETE SET NULL,
    address TEXT,
+   district TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `;
